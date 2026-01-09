@@ -3,24 +3,25 @@ FA-NIVA is an nf-core based workflow to analyze nanopore long-read sequencing da
 **Basic steps to use the workflow**:
 1. Install nextflow according to its manual (https://www.nextflow.io/docs/latest/install.html)
 2. Download and unzip (or git clone) FA-NIVA package from github (https://github.com/UKWgenommedizin/FA-NIVA)
-3. Download the test bam files from zenodo: https://zenodo.org/uploads/17284961. 
-   The reference human genome can be also downloaded from here: https://github.com/PacificBiosciences/reference_genomes?tab=readme-ov-file
 ```
 git clone -b main https://github.com/UKWgenommedizin/FA-NIVA
 ```
-3. Adjusting file path accordingly:
+3. Download the test bam files from zenodo: https://zenodo.org/records/17284961. 
+   The reference human genome can be also downloaded from here: https://github.com/PacificBiosciences/reference_genomes?tab=readme-ov-file
+
+4. Adjusting file path accordingly:
    1) Sequencing data path in **/FA-NIVA/assets/samplesheet.csv**. The file directory is the absolute path in your file system. 
    2) Reference genome path and dorado details in **/FA-NIVA/profile.config**. Besides the reference path, annotsvAnnotations database directory as well as the dorado model details can be specified in this file. It is also possible to provide the genome path in the command line using --fasta, --fasta_index accordingly.
    3) Resource specification in **/FA-NIVA/conf/base.config**. GPU is needed for dorado basecaller.
    4) Select packages to be used in **/FA-NIVA/nextflow.config**. 
    -In the default setting, annotation part is marked as false. If needed, installation of annotation database is needed (see below).
-4. Run the analysis by following command:
+5. Run the analysis by following command:
 ```
    nextflow run ./FA-NIVA/ \ # The path to the FA-NIVA package
       -profile fa_niva,docker \ # Corresponding to the setting in /FA-NIVA/profile.config. Beaware that there is no space between fa_niva,docker 
       --outdir ./output # Specify the directory for output results.
 ```
-5. Output file structure:
+6. Output file structure (one example output folder can be found in zenodo:https://zenodo.org/records/17284961 ):
 ````
 <sample_id> (folder)
 
