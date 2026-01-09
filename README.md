@@ -1,25 +1,26 @@
-nano-fanconi is an nf-core based workflow to analyze nanopore long-read sequencing data for routine fanconi diagnosis.
+FA-NIVA is an nf-core based workflow to analyze nanopore long-read sequencing data for fanconi genetic analysis.
 ![Description](https://github.com/UKWgenommedizin/FA-NIVA/blob/main/docs/workflow_complete_graph.png)
 **Basic steps to use the workflow**:
 1. Install nextflow according to its manual (https://www.nextflow.io/docs/latest/install.html)
-2. Download and unzip (or git clone) nano-fanconi package from github (https://github.com/UKWgenommedizin/FA-NIVA)
+2. Download and unzip (or git clone) FA-NIVA package from github (https://github.com/UKWgenommedizin/FA-NIVA)
+3. Download the test bam files from zenodo: https://zenodo.org/uploads/17284961. 
+   The reference human genome can be also downloaded from here: https://github.com/PacificBiosciences/reference_genomes?tab=readme-ov-file
 ```
 git clone -b main https://github.com/UKWgenommedizin/FA-NIVA
 ```
-4. Adjusting file path accordingly:
+3. Adjusting file path accordingly:
    1) Sequencing data path in **/FA-NIVA/assets/samplesheet.csv**. The file directory is the absolute path in your file system. 
-   2) Reference genome path in **/FA-NIVA/profile.config**. Besides the reference path, annotsvAnnotations database directory as well as the dorado model details can be specified in this file.
-   3) Select packages to be used in **/FA-NIVA/nextflow.config**. 
-   -Select (true or false) the programs one likes to use. The dafault setting is for analyzing human nanopore data. If aimed to analyze other genomes, please unselect variants annotations, use joint-snv-sv for phasing (target only for FANCA gene).
+   2) Reference genome path and dorado details in **/FA-NIVA/profile.config**. Besides the reference path, annotsvAnnotations database directory as well as the dorado model details can be specified in this file. It is also possible to provide the genome path in the command line using --fasta, --fasta_index accordingly.
+   3) Resource specification in **/FA-NIVA/conf/base.config**. GPU is needed for dorado basecaller.
+   4) Select packages to be used in **/FA-NIVA/nextflow.config**. 
    -In the default setting, annotation part is marked as false. If needed, installation of annotation database is needed (see below).
-   4) Resource specification in **/FA-NIVA/conf/base.config**.
-5. Run the analysis by following command:
+4. Run the analysis by following command:
 ```
-   nextflow run ./FA-NIVA/ \ # The path to the nano-fanconi package
-      -profile fa_niva,docker \ # Corresponding to the setting in /nf-core_nano-fanconi/profile.config. Beaware that no space between nanofanconi,docker 
+   nextflow run ./FA-NIVA/ \ # The path to the FA-NIVA package
+      -profile fa_niva,docker \ # Corresponding to the setting in /FA-NIVA/profile.config. Beaware that there is no space between fa_niva,docker 
       --outdir ./output # Specify the directory for output results.
 ```
-6. Output file structure:
+5. Output file structure:
 ````
 <sample_id> (folder)
 
@@ -37,16 +38,16 @@ git clone -b main https://github.com/UKWgenommedizin/FA-NIVA
 --samplesheet.valid.csv
 --software_versions.yml
 
--<sample_name> (folder)
+-<sample_id> (folder)
 --basecaller (optional bam output)
 --deepvariant 
---pbmm2 (optional bam output)
+--pbmm2 (optional cram output)
 --sawfish 
 --whatshap 
 
--<sample_name>.html (PycoQC report)
+-<sample_id>.html (PycoQC report)
 
--<sample_name>.json
+-<sample_id>.json
 
 ````
 
@@ -56,7 +57,7 @@ git clone -b main https://github.com/UKWgenommedizin/FA-NIVA
 2) Deepvariant model_type is set as WGS
 
 **Cite us (to-be-updated):**
-Nano-Fanconi: A Nextflow framework for automated analysis of Nanopore based long-read sequencing data for Fanconi anemia diagnosis. 
+FA-NIVA: A Nextflow framework for automated analysis of Nanopore based long-read sequencing data for genetic analysis in Fanconi anemia 
 
    
 <sub>Basic structure is from following repos (2024-12-10):</sub> \
