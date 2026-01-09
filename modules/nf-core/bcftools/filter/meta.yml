@@ -1,0 +1,43 @@
+name: bcftools_filter
+description: Filter VCF files
+keywords:
+  - filtering
+  - VCF
+  - variant calling
+tools:
+  - filter:
+      description: Filter VCF files by quality.
+      homepage: http://samtools.github.io/bcftools/bcftools.html
+      documentation: http://www.htslib.org/doc/bcftools.html
+      tool_dev_url: https://github.com/samtools/bcftools
+      doi: "10.1093/bioinformatics/btp352"
+      licence: ["MIT"]
+
+input:
+  - meta:
+      type: map
+      description: |
+        Groovy Map containing sample information
+        e.g. [ id:'test', single_end:false ]
+  - vcf:
+      type: file
+      description: The VCF/BCF file to be filtered
+      pattern: "*.{vcf.gz,vcf,bcf}"
+
+output:
+  - meta:
+      type: map
+      description: |
+        Groovy Map containing sample information
+        e.g. [ id:'test', single_end:false ]
+  - versions:
+      type: file
+      description: File containing software versions
+      pattern: "versions.yml"
+  - vcf:
+      type: file
+      description: Filtered VCF file
+      pattern: "*.{vcf.gz}"
+
+authors:
+  - "@Gwennid"

@@ -1,0 +1,3 @@
+id,sample,flowcell,input_path,batch,kit
+test,chr21,flowcell1,/home/yu_j/smbshare/test_faniva/chr21,20251127,LSK114
+test,chr22,flowcell1,/home/yu_j/smbshare/test_faniva/chr22,20251127,LSK114
