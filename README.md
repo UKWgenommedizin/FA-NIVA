@@ -27,10 +27,10 @@ git clone -b main https://github.com/UKWgenommedizin/FA-NIVA
 ```
 Or, if provide the reference path directly in CLI.
 ```
-   nextflow run ./FA-NIVA/ \ # The path to the FA-NIVA package
-      -profile fa_niva,docker \ # Corresponding to the setting in /FA-NIVA/profile.config. Beaware that there is no space between fa_niva,docker 
-      --outdir ./output # Specify the directory for output results.
-      --fasta ./ref/GRCh38_GIABv3_no_alt_analysis_set_maskedGRC_decoys_MAP2K3_KMT2C_KCNJ18.fasta\ 
+   nextflow run ./FA-NIVA/ \ 
+      -profile fa_niva,docker \ 
+      --outdir ./output \
+      --fasta ./ref/GRCh38_GIABv3_no_alt_analysis_set_maskedGRC_decoys_MAP2K3_KMT2C_KCNJ18.fasta \ 
       --fasta_index  ./ref/GRCh38_GIABv3_no_alt_analysis_set_maskedGRC_decoys_MAP2K3_KMT2C_KCNJ18.fasta.fai
 ```
 6. Output file structure (one example output folder can be found in zenodo:https://zenodo.org/records/17284961 ):
