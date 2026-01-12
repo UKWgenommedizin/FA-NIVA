@@ -10,19 +10,28 @@ git clone -b main https://github.com/UKWgenommedizin/FA-NIVA
    If needed, the reference human genome can be also downloaded from here: https://github.com/PacificBiosciences/reference_genomes?tab=readme-ov-file
 
 4. Adjusting file path accordingly:
-   1) Sequencing data path in **/FA-NIVA/assets/samplesheet.csv**. The file directory is the absolute path in your file system. <br>
+   1) Sequencing data path in **/FA-NIVA/assets/samplesheet.csv**. The file directory is the absolute path in your file system. The path to the folder containing the .pod5 or .fast5 or bam files. <br>
    2) Reference genome path and dorado details in **/FA-NIVA/profile.config**. <br>
       -Besides the reference path, the dorado model details can be specified in this file. <br>
       -If available, add annotsvAnnotations database directory. Installation step see below. <br>
-      -It is also possible to provide the genome path in the command line using --fasta, --fasta_index accordingly.<br>
+      -It is also possible to provide the genome path in the command line using --fasta, --fasta_index accordingly (see step 5).<br>
    3) Resource specification in **/FA-NIVA/conf/base.config**. GPU is needed for dorado basecaller.<br>
    4) Select packages to be used in **/FA-NIVA/nextflow.config**. <br>
-      -In the default setting, annotation part is marked as false. If needed, installation of annotation database is needed (see below).
+      -In the default setting, annotation part is marked as false. If needed, installation of annotation database is needed (see below).<br>
+   5) Add the genomic regions for SNV-SV joined phasing analysis in **/FA-NIVA/assets/SNV_modify_regions.csv**
 5. Run the analysis by following command:
 ```
    nextflow run ./FA-NIVA/ \ # The path to the FA-NIVA package
       -profile fa_niva,docker \ # Corresponding to the setting in /FA-NIVA/profile.config. Beaware that there is no space between fa_niva,docker 
       --outdir ./output # Specify the directory for output results.
+```
+Or, if provide the reference path directly in CLI.
+```
+   nextflow run ./FA-NIVA/ \ # The path to the FA-NIVA package
+      -profile fa_niva,docker \ # Corresponding to the setting in /FA-NIVA/profile.config. Beaware that there is no space between fa_niva,docker 
+      --outdir ./output # Specify the directory for output results.
+      --fasta ./ref/GRCh38_GIABv3_no_alt_analysis_set_maskedGRC_decoys_MAP2K3_KMT2C_KCNJ18.fasta\ 
+      --fasta_index  ./ref/GRCh38_GIABv3_no_alt_analysis_set_maskedGRC_decoys_MAP2K3_KMT2C_KCNJ18.fasta.fai
 ```
 6. Output file structure (one example output folder can be found in zenodo:https://zenodo.org/records/17284961 ):
 ````
