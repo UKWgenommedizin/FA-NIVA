@@ -7,14 +7,17 @@ FA-NIVA is an nf-core based workflow to analyze nanopore long-read sequencing da
 git clone -b main https://github.com/UKWgenommedizin/FA-NIVA
 ```
 3. Download the test bam files from zenodo: https://zenodo.org/records/17284961. 
-   The reference human genome can be also downloaded from here: https://github.com/PacificBiosciences/reference_genomes?tab=readme-ov-file
+   If needed, the reference human genome can be also downloaded from here: https://github.com/PacificBiosciences/reference_genomes?tab=readme-ov-file
 
 4. Adjusting file path accordingly:
    1) Sequencing data path in **/FA-NIVA/assets/samplesheet.csv**. The file directory is the absolute path in your file system. 
-   2) Reference genome path and dorado details in **/FA-NIVA/profile.config**. Besides the reference path, annotsvAnnotations database directory as well as the dorado model details can be specified in this file. It is also possible to provide the genome path in the command line using --fasta, --fasta_index accordingly.
+   2) Reference genome path and dorado details in **/FA-NIVA/profile.config**. 
+      -Besides the reference path, the dorado model details can be specified in this file. 
+      -If available, add annotsvAnnotations database directory. Installation step see below.
+      -It is also possible to provide the genome path in the command line using --fasta, --fasta_index accordingly.
    3) Resource specification in **/FA-NIVA/conf/base.config**. GPU is needed for dorado basecaller.
    4) Select packages to be used in **/FA-NIVA/nextflow.config**. 
-   -In the default setting, annotation part is marked as false. If needed, installation of annotation database is needed (see below).
+      -In the default setting, annotation part is marked as false. If needed, installation of annotation database is needed (see below).
 5. Run the analysis by following command:
 ```
    nextflow run ./FA-NIVA/ \ # The path to the FA-NIVA package
