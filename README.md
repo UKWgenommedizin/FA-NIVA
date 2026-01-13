@@ -11,7 +11,7 @@ git clone -b main https://github.com/UKWgenommedizin/FA-NIVA
 
 4. Adjusting file path accordingly:
    1) Sequencing data path in **/FA-NIVA/assets/samplesheet.csv**. The file directory is the absolute path in your file system. The path to the folder containing the .pod5 or .fast5 or bam files. <br>
-   2) Reference genome path and dorado details in **/FA-NIVA/profile.config**. <br>
+   2) Reference genome path and dorado details in **/FA-NIVA/conf/profile.config**. <br>
       -Besides the reference path, the dorado model details can be specified in this file. <br>
       -If available, add annotsvAnnotations database directory. Installation step see below. <br>
       -It is also possible to provide the genome path in the command line using --fasta, --fasta_index accordingly (see step 5).<br>

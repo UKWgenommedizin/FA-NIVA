@@ -21,7 +21,7 @@ process EDIT_SNV_GENOTYPE {
     // when:
     // task.ext.when == null || task.ext.when
 
-    script: // This script is bundled with the pipeline, in nf-core_nano-fanconi/bin/
+    script: // This script is bundled with the pipeline, in FA-NIVA/bin/
     
     """
     SNV_modify_GT.py \\

@@ -1,4 +1,4 @@
-# nf-core_nano-fanconi pipeline parameters
+# FA-NIVA pipeline parameters
 ## same formate as nf-core-wgsnano (2024-12-10)
 ##TO DO
 

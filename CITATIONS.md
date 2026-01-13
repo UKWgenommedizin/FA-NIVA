@@ -1,4 +1,4 @@
-# jiangyanyu/nf-core_nano-fanconi: Citations
+# UKWgenommedizin/FA-NIVA: Citations
 The formate is based on https://github.com/dhslab/nf-core-wgsnano
 
 ## [nf-core](https://pubmed.ncbi.nlm.nih.gov/32055031/)

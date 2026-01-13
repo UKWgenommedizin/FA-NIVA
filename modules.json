@@ -1,6 +1,6 @@
 {
-    "name": "JiangyanYu/nf-core_nano-fanconi",
-    "homePage": "https://github.com/JiangyanYu/nf-core_nano-fanconi",
+    "name": "UKWgenommedizin/FA-NIVA",
+    "homePage": "https://github.com/UKWgenommedizin/FA-NIVA",
     "repos": {
         "https://github.com/nf-core/modules.git": {
             "modules": {

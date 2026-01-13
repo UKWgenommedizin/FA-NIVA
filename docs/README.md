@@ -1,8 +1,8 @@
-# nf-core_nano-fanconi: Documentation
+# FA-NIVA: Documentation
 ## same formate as nf-core-wgsnano (2024-12-10)
 ##TO DO
 
-The nf-core_nano-fanconi documentation is split into the following pages:
+The FA-NIVA documentation is split into the following pages:
 
 - [Usage](usage.md)
   - An overview of how the pipeline works, how to run it and a description of all of the different command-line flags.

@@ -1,5 +1,5 @@
 //
-// This file holds several functions specific to the workflow/nano-fanconi.nf in the nf-core_nano-fanconi pipeline
+// This file holds several functions specific to the workflow/fa-niva.nf in the FA-NIVA pipeline
 //
 
 import groovy.text.SimpleTemplateEngine

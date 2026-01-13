@@ -1,6 +1,6 @@
 {
   "$schema": "http://json-schema.org/draft-07/schema",
-  "$id": "https://github.com/JiangyanYu/nf-core_nano-fanconi/blob/main/nextflow_schema.json",
+  "$id": "https://github.com/UKWgenommedizin/FA-NIVA/blob/main/nextflow_schema.json",
   "title": "jiangyanyu/nf-core_nano-fanoci pipeline parameters",
   "description": "Nextflow pipeline for analysis of Nanopore Sequencing for Fanconi Diagnosis",
   "type": "object",
