@@ -53,10 +53,10 @@ Or, if provide the reference path directly in CLI.
 
 -<sample_id> (folder)
 --basecaller (optional bam output)
---deepvariant 
+--deepvariant (folder)
 --pbmm2 (optional cram output)
---sawfish 
---whatshap 
+--sawfish (folder)
+--whatshap (folder)
 
 -<sample_id>.html (PycoQC report)
 
