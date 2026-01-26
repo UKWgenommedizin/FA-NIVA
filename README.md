@@ -1,8 +1,8 @@
-FA-NIVA is an nf-core based workflow to analyze nanopore long-read sequencing data for fanconi genetic analysis.
+FA-NIVA is an nf-core based workflow to analyze nanopore long-read sequencing data for Fanconi genetic analysis.
 ![Description](https://github.com/UKWgenommedizin/FA-NIVA/blob/main/docs/workflow_complete_graph.png)
 **Basic steps to use the workflow**:
-1. Install nextflow according to its manual (https://www.nextflow.io/docs/latest/install.html)
-2. Download and unzip (or git clone) FA-NIVA package from github (https://github.com/UKWgenommedizin/FA-NIVA)
+1. Install nextflow according to its [manual](https://www.nextflow.io/docs/latest/install.html)
+2. Download and unzip (or git clone) FA-NIVA package from [GitHub](https://github.com/UKWgenommedizin/FA-NIVA)
 ```
 git clone -b main https://github.com/UKWgenommedizin/FA-NIVA
 ```
@@ -17,15 +17,15 @@ git clone -b main https://github.com/UKWgenommedizin/FA-NIVA
       -It is also possible to provide the genome path in the command line using --fasta, --fasta_index accordingly (see step 5).<br>
    3) Resource specification in **/FA-NIVA/conf/base.config**. GPU is needed for dorado basecaller.<br>
    4) Select packages to be used in **/FA-NIVA/nextflow.config**. <br>
-      -In the default setting, annotation part is marked as false. If needed, installation of annotation database is needed (see below).<br>
+      -In the default setting, the annotation part is marked as false. If needed, the annotation database must be installed (see below).<br>
    5) Add the genomic regions for SNV-SV joined phasing analysis in **/FA-NIVA/assets/SNV_modify_regions.csv**
-5. Run the analysis by following command:
+5. Run the analysis by the following command:
 ```
    nextflow run ./FA-NIVA/ \ # The path to the FA-NIVA package
-      -profile fa_niva,docker \ # Corresponding to the setting in /FA-NIVA/profile.config. Beaware that there is no space between fa_niva,docker 
+      -profile fa_niva,docker \ # Corresponding to the setting in /FA-NIVA/profile.config. Be aware that there is no space between fa_niva,docker 
       --outdir ./output # Specify the directory for output results.
 ```
-Or, if provide the reference path directly in CLI.
+Or, if you provide the reference path directly in the CLI.
 ```
    nextflow run ./FA-NIVA/ \ 
       -profile fa_niva,docker \ 
@@ -66,7 +66,7 @@ Or, if provide the reference path directly in CLI.
 
 
 **Notes**
-1) the current annotsv docker image does not contain annotationsDir, thus need to be installed first (https://github.com/lgmgeo/AnnotSV/blob/master/bin/INSTALL_annotations.sh). Then manually change the directory in the profile.config file.
+1) the current annotsv docker image does not contain annotationsDir, thus it needs to be installed first (https://github.com/lgmgeo/AnnotSV/blob/master/bin/INSTALL_annotations.sh). Then manually change the directory in the profile.config file.
 2) Deepvariant model_type is set as WGS
 
 **Cite us (to-be-updated):**
