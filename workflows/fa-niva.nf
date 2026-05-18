@@ -499,7 +499,7 @@ workflow FANIVA {
                     ["${meta.id}:${chrom}", [vcf, tbi]] 
                 }
         )
-        .map { chrom, deepvariant_data, sawfish_data ->
+        .map { key, deepvariant_data, sawfish_data ->
             def meta = deepvariant_data[0]
             def deepvariant_vcf = deepvariant_data[1]
             def deepvariant_tbi = deepvariant_data[2]
@@ -543,7 +543,7 @@ workflow FANIVA {
                     ["${meta.id}:${chrom}", [vcf, tbi, caller]] 
                 }
         )
-        .map { chrom, cram_data, vcf_data ->
+        .map { key, cram_data, vcf_data ->
             // Extract data from joined structure - this is where the error occurred
             def meta = cram_data[0]
             def cram = cram_data[1]
