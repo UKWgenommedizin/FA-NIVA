@@ -6,7 +6,7 @@ def processLabel = determineLabel()
 
 process DEEPVARIANT {
     tag "$meta.id"
-    maxForks 8  // Limits the number of concurrent executions of this process to 8
+    maxForks 4  // Limits the number of concurrent executions of this process to 4
     label processLabel
 
     container "google/deepvariant:1.9.0-gpu"
