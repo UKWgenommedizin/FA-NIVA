@@ -29,6 +29,7 @@ process DEEPVARIANT {
         task.ext.when == null || task.ext.when
 
     beforeScript """
+        sleep \$((RANDOM % 30))  # Random sleep to reduce GPU contention when multiple jobs start simultaneously
         GPU_ID=\$(nvidia-smi --query-gpu=index,memory.free \\
                     --format=csv,noheader,nounits \\
                   | sort -t',' -k2 -rn \\
