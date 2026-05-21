@@ -29,21 +29,25 @@ process DEEPVARIANT {
         task.ext.when == null || task.ext.when
 
     beforeScript """
-        sleep \$((RANDOM % 30))  # Random sleep to reduce GPU contention when multiple jobs start simultaneously
+        WORK_DIR=\$(mktemp -d)
+        # or find the actual task workdir
+        sleep \$((RANDOM % 15))
         GPU_ID=\$(nvidia-smi --query-gpu=index,memory.free \\
                     --format=csv,noheader,nounits \\
-                  | sort -t',' -k2 -rn \\
-                  | head -1 \\
-                  | cut -d',' -f1 \\
-                  | tr -d ' ')
-        echo "export CUDA_VISIBLE_DEVICES=\$GPU_ID" > .gpu_env
-    """
+                | sort -t',' -k2 -rn \\
+                | head -1 \\
+                | cut -d',' -f1 \\
+                | tr -d ' ')
+        echo \$GPU_ID > /tmp/.gpu_env_${meta.id}
+        """
+
+
 
     script:
         
         """
-        source .gpu_env
-        echo "Using GPU: \$CUDA_VISIBLE_DEVICES for ${meta.id}"
+        export CUDA_VISIBLE_DEVICES=\$(cat /tmp/.gpu_env_${meta.id})
+        echo "Using GPU: \$CUDA_VISIBLE_DEVICES"
 
         /opt/deepvariant/bin/run_deepvariant \\
             --num_shards=${task.cpus} \\
@@ -53,6 +57,9 @@ process DEEPVARIANT {
             --ref=${fasta} \\
             --reads=${cram} \\
             --output_vcf=${meta.id}.deepvariant.vcf.gz
+
+        # cleanup
+        rm -f /tmp/.gpu_env_${meta.id}
 
         cat <<-END_VERSIONS > versions.yml
         "${task.process}":
