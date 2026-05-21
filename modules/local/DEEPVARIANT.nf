@@ -6,7 +6,7 @@ def processLabel = determineLabel()
 
 process DEEPVARIANT {
     tag "$meta.id"
-    maxForks 4  // Limits the number of concurrent executions of this process to 4
+    maxForks 4  // Limits the number of concurrent executions of this process to the maximum GPUs available
     label processLabel
 
     container "google/deepvariant:1.9.0-gpu"
@@ -28,9 +28,22 @@ process DEEPVARIANT {
     when:
         task.ext.when == null || task.ext.when
 
+    beforeScript """
+        GPU_ID=\$(nvidia-smi --query-gpu=index,memory.free \\
+                    --format=csv,noheader,nounits \\
+                  | sort -t',' -k2 -rn \\
+                  | head -1 \\
+                  | cut -d',' -f1 \\
+                  | tr -d ' ')
+        echo "export CUDA_VISIBLE_DEVICES=\$GPU_ID" > .gpu_env
+    """
+
     script:
         
         """
+        source .gpu_env
+        echo "Using GPU: \$CUDA_VISIBLE_DEVICES for ${meta.id}"
+
         /opt/deepvariant/bin/run_deepvariant \\
             --num_shards=${task.cpus} \\
             --model_type=PACBIO \\
