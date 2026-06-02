@@ -6,7 +6,7 @@ A comprehensive Nextflow pipeline for analyzing long-read Nanopore sequencing da
 
 ## 📑 Table of Contents
 
-| [Overview](#overview) | [Quick Start](#quick-start) | [Input](#input-data) | [Configuration](#configuration) | [Output](#output-structure) | [Features](#pipeline-features) | [Examples](#execution-examples) | [Requirements](#system-requirements) | [Troubleshooting](#troubleshooting) | [Citation](#citation) |
+| [Overview](#overview) | [Quick Start](#quick-start) | [Input](#input-data) | [Supported_Input](#supported-input-types) | [Configuration](#configuration) | [Output](#output-structure) | [Features](#pipeline-features) | [Examples](#execution-examples) | [Requirements](#system-requirements) | [Troubleshooting](#troubleshooting) | [Citation](#citation) |
 
 ---
 
@@ -80,6 +80,48 @@ sample_002,/path/to/sample_002/fastq_pass/
 ```
 
 See [`assets/samplesheet.csv`](assets/samplesheet.csv) for a complete example.
+
+---
+
+## Supported Input Types
+
+FA-NIVA supports three starting points:
+
+| Input type | Starting step | Required files |
+|------------|---------------|----------------|
+| POD5 | Basecalling | *.pod5 files |
+| FAST5 | Basecalling | *.fast5 files |
+| FASTQ | Alignment | *.fastq.gz files |
+| BAM | Variant calling | aligned BAM files + BAI index |
+
+### Using POD5 files
+
+samplesheet.csv
+
+sample,pod5
+Patient01,/data/pod5/Patient01/
+
+Example command:
+
+nextflow run UKWgenommedizin/FA-NIVA \
+  -profile docker \
+  --input samplesheet_pod5.csv \
+  --genome GRCh38
+
+The pipeline will:
+1. Run Dorado basecalling
+2. Align reads using Minimap2
+3. Perform variant calling using DeepVariant
+4. Generate QC reports
+
+### Using FAST5 files
+
+...
+
+### Using BAM files
+
+...
+
 
 ---
 
