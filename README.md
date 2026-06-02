@@ -6,15 +6,18 @@ A comprehensive Nextflow pipeline for analyzing long-read Nanopore sequencing da
 
 ## 📑 Table of Contents
 
-| [Overview](#overview) | [Quick Start](#quick-start) | [Input](#input-data) | [Supported_Input](#supported-input-types) | [Configuration](#configuration) | [Output](#output-structure) | [Features](#pipeline-features) | [Examples](#execution-examples) | [Requirements](#system-requirements) | [Troubleshooting](#troubleshooting) | [Citation](#citation) |
+[1. Overview](#overview) 
+[2. Quick Start](#quick-start) | [Input](#input-data) | [Supported_Input](#supported-input-types) | [Configuration](#configuration) | [Output](#output-structure) | [Features](#pipeline-features) | [Examples](#execution-examples) | [Requirements](#system-requirements) | [Troubleshooting](#troubleshooting) | [Citation](#citation) |
 
 ---
 
 ## Overview
 
+![Description](https://github.com/UKWgenommedizin/FA-NIVA/blob/main/docs/workflow_complete_graph.png)
+
 FA-NIVA processes Nanopore sequencing data to:
-- Perform high-accuracy basecalling using Dorado with optional GPU acceleration
-- Align reads to reference genome using Minimap2
+- Perform high-accuracy basecalling using Dorado with GPU acceleration
+- Align reads to reference genome using pbmm2
 - Call small variants (SNVs/indels) using DeepVariant with GPU support
 - Annotate structural variants using AnnotSV
 - Generate comprehensive quality control reports with MultiQC
@@ -23,47 +26,97 @@ FA-NIVA processes Nanopore sequencing data to:
 
 ## Quick Start
 
-### Prerequisites
+Before running FA-NIVA, ensure that the following software and resources are available:
 
-- **Nextflow** >= 22.10.1
-- One of the following container engines:
-  - Docker
-  - Singularity
-  - Conda/Mamba
-  - Podman
-  - Shifter
-  - Charliecloud
+1. Nextflow
 
-### Basic Usage
+FA-NIVA requires Nextflow ≥ 22.10.1.
 
-```bash
+Install Nextflow according to the official documentation:
+
+https://www.nextflow.io/docs/latest/install.html
+
+2. Container Engine
+
+The pipeline requires one of the following execution environments:
+
+Docker (recommended and fully tested)
+Singularity/Apptainer
+Conda or Mamba
+Podman
+Shifter
+Charliecloud
+
+3. Reference Genome Files
+
+FA-NIVA requires a reference genome compatible with the selected genome build (e.g., GRCh38).
+
+Two deployment scenarios are supported:
+
+Option A: HPC Environment with Internet Access
+
+If the compute environment has internet access, the required reference files will be downloaded automatically during pipeline execution.
+
+Option B: HPC Environment without Internet Access
+
+If external downloads are restricted, the reference genome files must be provided manually through command-line parameters or a custom configuration file.
+
+Reference genomes can be obtained from:
+
+https://github.com/PacificBiosciences/reference_genomes
+
+The following files are required:
+
+GRCh38_reference/
+├── genome.fasta
+├── genome.fasta.fai
+└── genome.dict (optional, depending on downstream tools)
+
+Basic Usage: HPC Environment with Internet Access
+
+The pipeline automatically downloads the required reference resources.
+
 nextflow run UKWgenommedizin/FA-NIVA \
-  -profile docker \
+  -profile fa_niva,docker \
   --input samplesheet.csv \
   --genome GRCh38 \
-  --outdir ./results
-```
-
-### Using GPU Acceleration (Recommended)
-
-```bash
-nextflow run UKWgenommedizin/FA-NIVA \
-  -profile docker \
-  --input samplesheet.csv \
-  --genome GRCh38 \
-  --outdir ./results \
+  --outdir results \
   --use_gpu true
-```
 
-### Cluster Execution (RIS/LSF)
+Parameter description:
 
-```bash
-nextflow run UKWgenommedizin/FA-NIVA \
-  -profile ris \
+Parameter	Description
+--input	Sample sheet describing input samples
+--genome	Reference genome build (GRCh38 or GRCh37)
+--outdir	Output directory for pipeline results
+--use_gpu	Enable GPU acceleration for Dorado and DeepVariant
+Basic Usage: HPC Environment without Internet Access
+
+Clone the repository locally:
+
+git clone https://github.com/UKWgenommedizin/FA-NIVA.git
+cd FA-NIVA
+
+Run the pipeline while explicitly providing the reference genome files:
+
+nextflow run ./FA-NIVA \
+  -profile fa_niva,docker \
   --input samplesheet.csv \
-  --genome GRCh38 \
-  --outdir ./results
-```
+  --fasta ./ref/GRCh38_GIABv3_no_alt_analysis_set_maskedGRC_decoys_MAP2K3_KMT2C_KCNJ18.fasta \
+  --fasta_index ./ref/GRCh38_GIABv3_no_alt_analysis_set_maskedGRC_decoys_MAP2K3_KMT2C_KCNJ18.fasta.fai \
+  --outdir results \
+  --use_gpu true
+
+Parameter description:
+
+Parameter	Description
+-profile fa_niva,docker	Uses the FA-NIVA configuration together with Docker execution. Note that there must be no spaces between fa_niva,docker.
+--fasta	Path to the reference genome FASTA file.
+--fasta_index	Path to the corresponding FASTA index (.fai) file.
+--outdir	Directory where all output files will be written.
+--use_gpu	Enable GPU acceleration when supported by the hardware.
+
+For cluster-specific settings, resource allocation, and custom configurations, see the Configuration section below.
 
 ---
 
