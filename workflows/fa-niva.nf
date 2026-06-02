@@ -491,20 +491,21 @@ workflow FANIVA {
     // Join DeepVariant and Sawfish VCFs by chromosome following nf-core modular patterns
     ch_matched_vcfs_tbis_by_chrom = ch_deepvariant_split_by_chrom_vcf_tbi
         .map { meta, vcf, tbi, caller, chrom -> 
-            [chrom, [meta, vcf, tbi]] 
+            ["${meta.id}:${chrom}", [meta, vcf, tbi]] 
         }
         .join(
             ch_sawfish_split_by_chrom_vcf_tbi
                 .map { meta, vcf, tbi, caller, chrom -> 
-                    [chrom, [vcf, tbi]] 
+                    ["${meta.id}:${chrom}", [vcf, tbi]] 
                 }
         )
-        .map { chrom, deepvariant_data, sawfish_data ->
+        .map { key, deepvariant_data, sawfish_data ->
             def meta = deepvariant_data[0]
             def deepvariant_vcf = deepvariant_data[1]
             def deepvariant_tbi = deepvariant_data[2]
             def sawfish_vcf = sawfish_data[0]
             def sawfish_tbi = sawfish_data[1]
+            def chrom = key.split(':')[1]  // Extract chromosome from the key
 
             // Return tuple matching EDIT_SNV_GENOTYPE module input signature
             [meta, deepvariant_vcf, deepvariant_tbi, sawfish_vcf, sawfish_tbi, chrom]
@@ -533,16 +534,16 @@ workflow FANIVA {
     ch_cram_crai_vcf_tbi_caller_chrom_for_phasing = ch_split_by_chrom_cram_crai
         .map { meta, cram, crai, chrom -> 
             // Create join key: chromosome for matching
-            [chrom, [meta, cram, crai]] 
+            ["${meta.id}:${chrom}", [meta, cram, crai]] 
         }
         .join(
             ch_deepvariant_split_by_chrom_vcf_tbi
                 .map { meta, vcf, tbi, caller, chrom -> 
                     // Create matching join key: chromosome
-                    [chrom, [vcf, tbi, caller]] 
+                    ["${meta.id}:${chrom}", [vcf, tbi, caller]] 
                 }
         )
-        .map { chrom, cram_data, vcf_data ->
+        .map { key, cram_data, vcf_data ->
             // Extract data from joined structure - this is where the error occurred
             def meta = cram_data[0]
             def cram = cram_data[1]
@@ -551,6 +552,8 @@ workflow FANIVA {
             def vcf = vcf_data[0]
             def tbi = vcf_data[1]
             def caller = vcf_data[2]
+
+            def chrom = key.split(':')[1]  // Extract chromosome from the key
             
             // Return tuple for WHATSHAP_PHASE following nf-core module patterns
             [meta, cram, crai, vcf, tbi, caller, chrom]
