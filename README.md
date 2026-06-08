@@ -2,17 +2,6 @@
 
 A comprehensive Nextflow pipeline for analyzing long-read Nanopore sequencing data for Fanconi Anemia diagnosis. This pipeline automates basecalling, alignment, variant calling, and structural variant annotation.
 
----
-
-## 📑 Table of Contents
-
-[1. Overview](#overview) 
-[2. Quick Start](#quick-start) | [Input](#input-data) | [Supported_Input](#supported-input-types) | [Configuration](#configuration) | [Output](#output-structure) | [Features](#pipeline-features) | [Examples](#execution-examples) | [Requirements](#system-requirements) | [Troubleshooting](#troubleshooting) | [Citation](#citation) |
-
----
-
-## Overview
-
 ![Description](https://github.com/UKWgenommedizin/FA-NIVA/blob/main/docs/workflow_complete_graph.png)
 
 FA-NIVA processes Nanopore sequencing data to:
@@ -24,390 +13,295 @@ FA-NIVA processes Nanopore sequencing data to:
 
 ---
 
-## Quick Start
+## 📑 Table of Contents
+
+[1. Quick Start](#1-quick-start-using-example-files) <br/>
+[2. Input](#2-input-data) <br/>
+[2.1 Samplesheet Format](#21-samplesheet-format) <br/>
+[2.2 Supported_Input](#22-supported-input-types) <br/>
+[3. Configuration](#3-configuration) <br/>
+[4. Output](#output-structure) 
+[Citation](#citation) |
+
+---
+
+## 1. Quick Start Using Example Files
+
+### Prerequisites
 
 Before running FA-NIVA, ensure that the following software and resources are available:
 
-1. Nextflow
+-Nextflow. FA-NIVA requires Nextflow ≥ 22.10.1. Install Nextflow according to the official documentation: https://www.nextflow.io/docs/latest/install.html
 
-FA-NIVA requires Nextflow ≥ 22.10.1.
+-Container Engine. The pipeline requires one of the following execution environments:
 
-Install Nextflow according to the official documentation:
+- **Docker** — Recommended and fully tested
+- **Singularity/Apptainer** — Supported
+- **Conda/Mamba** — Supported
+- **Podman** — Supported
+- **Shifter** — Supported
+- **Charliecloud** — Supported
 
-https://www.nextflow.io/docs/latest/install.html
+-Reference Genome Files. FA-NIVA requires a reference genome compatible with the selected genome build (e.g., GRCh38). Two deployment scenarios are supported:
 
-2. Container Engine
+### Basic Usage
 
-The pipeline requires one of the following execution environments:
+Option A: HPC Environment with Internet Access. If the compute environment has internet access, the required reference files will be downloaded automatically during pipeline execution.
 
-Docker (recommended and fully tested)
-Singularity/Apptainer
-Conda or Mamba
-Podman
-Shifter
-Charliecloud
-
-3. Reference Genome Files
-
-FA-NIVA requires a reference genome compatible with the selected genome build (e.g., GRCh38).
-
-Two deployment scenarios are supported:
-
-Option A: HPC Environment with Internet Access
-
-If the compute environment has internet access, the required reference files will be downloaded automatically during pipeline execution.
-
-Option B: HPC Environment without Internet Access
-
-If external downloads are restricted, the reference genome files must be provided manually through command-line parameters or a custom configuration file.
-
-Reference genomes can be obtained from:
-
-https://github.com/PacificBiosciences/reference_genomes
+Option B: HPC Environment without Internet Access. If external downloads are restricted, the reference genome files must be provided manually through command-line parameters or a custom configuration file. Reference genomes can be obtained from: https://github.com/PacificBiosciences/reference_genomes
 
 The following files are required:
 
+```
 GRCh38_reference/
 ├── genome.fasta
 ├── genome.fasta.fai
-└── genome.dict (optional, depending on downstream tools)
+```
 
-Basic Usage: HPC Environment with Internet Access
+### Basic Usage A: HPC Environment with Internet Access
 
-The pipeline automatically downloads the required reference resources.
+The pipeline will automatically download the required reference resources from AWS.
 
+```bash
 nextflow run UKWgenommedizin/FA-NIVA \
   -profile fa_niva,docker \
   --input samplesheet.csv \
   --genome GRCh38 \
   --outdir results \
+  --reads_format bam \
   --use_gpu true
+```
 
 Parameter description:
+| Parameter | Description |
+|-----------|-------------|
+| `--input` | Sample sheet describing input samples. See [Samplesheet Format](#samplesheet-format) for details. |
+| `--genome` | Reference genome build (`GRCh38` or `GRCh37`) |
+| `--outdir` | Output directory for pipeline results |
+| `--reads_format` | Set reads format as bam, then dorado basecalling step will be skipped |
+| `--use_gpu` | Enable GPU acceleration for Dorado and DeepVariant |
 
-Parameter	Description
---input	Sample sheet describing input samples
---genome	Reference genome build (GRCh38 or GRCh37)
---outdir	Output directory for pipeline results
---use_gpu	Enable GPU acceleration for Dorado and DeepVariant
-Basic Usage: HPC Environment without Internet Access
+### Basic Usage B: HPC Environment without Internet Access
 
-Clone the repository locally:
+Clone the repository locally and copy it to HPC environment:
 
+```bash
 git clone https://github.com/UKWgenommedizin/FA-NIVA.git
-cd FA-NIVA
+```
 
 Run the pipeline while explicitly providing the reference genome files:
 
-nextflow run ./FA-NIVA \
+```bash
+nextflow run ./FA-NIVA \ # Local path to the cloned FA-NIVA GitHub repository
   -profile fa_niva,docker \
   --input samplesheet.csv \
   --fasta ./ref/GRCh38_GIABv3_no_alt_analysis_set_maskedGRC_decoys_MAP2K3_KMT2C_KCNJ18.fasta \
   --fasta_index ./ref/GRCh38_GIABv3_no_alt_analysis_set_maskedGRC_decoys_MAP2K3_KMT2C_KCNJ18.fasta.fai \
   --outdir results \
+  --reads_format bam \
   --use_gpu true
-
-Parameter description:
-
-Parameter	Description
--profile fa_niva,docker	Uses the FA-NIVA configuration together with Docker execution. Note that there must be no spaces between fa_niva,docker.
---fasta	Path to the reference genome FASTA file.
---fasta_index	Path to the corresponding FASTA index (.fai) file.
---outdir	Directory where all output files will be written.
---use_gpu	Enable GPU acceleration when supported by the hardware.
-
-For cluster-specific settings, resource allocation, and custom configurations, see the Configuration section below.
-
----
-
-## Input Data
-
-### Samplesheet Format
-
-Create a CSV file (`samplesheet.csv`) with the following columns:
-
-```csv
-sample,fastq_pass
-sample_001,/path/to/sample_001/fastq_pass/
-sample_002,/path/to/sample_002/fastq_pass/
 ```
 
-See [`assets/samplesheet.csv`](assets/samplesheet.csv) for a complete example.
+Parameter description:
+| Parameter | Description |
+|-----------|-------------|
+| `-profile fa_niva,docker` | Uses the FA-NIVA configuration together with Docker execution. Note that there must be **no spaces** between `fa_niva,docker`. |
+| `--fasta` | Path to the reference genome FASTA file. |
+| `--fasta_index` | Path to the corresponding FASTA index (`.fai`) file. |
+| `--outdir` | Output directory where all pipeline results will be written. |
+| `--reads_format` | Set reads format as bam, then dorado basecalling step will be skipped |
+| `--use_gpu` | Enable GPU acceleration for Dorado and DeepVariant when supported by the available hardware. |
+
+For cluster-specific settings, resource allocation, and custom configurations, see the [Configuration](#3-configuration) section below.
 
 ---
 
-## Supported Input Types
+## 2 Input Data
+
+### 2.1 Samplesheet Format
+
+Create a CSV file (`samplesheet.csv`) with the following columns. The input_path column should contain the path to the directory holding the input data files (e.g., POD5, FAST5, FASTQ, or BAM files) for each sample.
+
+To ensure compatibility across operating systems, we recommend copying and modifying the template file located at [`assets/samplesheet.csv`](assets/samplesheet.csv). When preparing the sample sheet on Linux-based HPC systems, editing the file with vim or another Unix-compatible text editor can help avoid issues related to Windows line endings and file formatting.
+
+```csv
+id,sample,flowcell,input_path,batch,kit
+test,chr21,flowcell1,/home/yu_j/smbshare/test_faniva/chr21,20251127,LSK114
+test,chr22,flowcell1,/home/yu_j/smbshare/test_faniva/chr22,20251127,LSK114
+```
+---
+
+### 2.2 Supported Input Types
 
 FA-NIVA supports three starting points:
 
-| Input type | Starting step | Required files |
-|------------|---------------|----------------|
-| POD5 | Basecalling | *.pod5 files |
-| FAST5 | Basecalling | *.fast5 files |
-| FASTQ | Alignment | *.fastq.gz files |
-| BAM | Variant calling | aligned BAM files + BAI index |
+| Input Type | Pipeline Entry Point | Required Files                                                         | Validation Status |
+| ---------- | -------------------- | ---------------------------------------------------------------------- | ----------------- |
+| POD5       | Basecalling          | Nanopore POD5 files (`*.pod5`)                                         | Fully tested      |
+| FAST5      | Basecalling          | Nanopore FAST5 files (`*.fast5`)                                       | Fully tested      |
+| FASTQ      | Alignment            | Basecalled FASTQ files (`*.fastq.gz`)                                  | Fully tested      |
+| BAM*       | Variant Calling      | Coordinate-sorted BAM file (`*.bam`) and corresponding index (`*.bai`) | Fully tested      |
 
-### Using POD5 files
+*When input is bam file, dorado basecalling step will be skipped.
 
-samplesheet.csv
+#### Using POD5 files
 
-sample,pod5
-Patient01,/data/pod5/Patient01/
+prepare samplesheet_pod5.csv
+
+```csv
+id,sample,flowcell,input_path,batch,kit
+sample1_pod5,sample1,flowcell1,/home/yu_j/smbshare/sample1,20251127,LSK114
+```
 
 Example command:
 
-nextflow run UKWgenommedizin/FA-NIVA \
-  -profile docker \
+```bash
+nextflow run ./FA-NIVA \
+  -profile FA_NIVA,docker \
   --input samplesheet_pod5.csv \
-  --genome GRCh38
+  --fasta ./ref/GRCh38_GIABv3_no_alt_analysis_set_maskedGRC_decoys_MAP2K3_KMT2C_KCNJ18.fasta \
+  --fasta_index ./ref/GRCh38_GIABv3_no_alt_analysis_set_maskedGRC_decoys_MAP2K3_KMT2C_KCNJ18.fasta.fai \
+  --outdir results \
+  --dorado_model dna_r10.4.1_e8.2_400bps_fast@v5.0.0 \ # important to use the corresponding dorado_model for basecalling
+  --reads_format pod5 \
+  --use_gpu true
+```
 
-The pipeline will:
-1. Run Dorado basecalling
-2. Align reads using Minimap2
-3. Perform variant calling using DeepVariant
-4. Generate QC reports
 
-### Using FAST5 files
+#### Using FAST5 files
 
-...
+prepare samplesheet_fast5.csv
 
-### Using BAM files
+```csv
+id,sample,flowcell,input_path,batch,kit
+sample1_fast,sample1,flowcell1,/home/yu_j/smbshare/sample1,20251127,LSK114
+```
 
-...
+Example command:
+
+```bash
+nextflow run ./FA-NIVA \
+  -profile FA_NIVA,docker \
+  --input samplesheet_fast5.csv \
+  --fasta ./ref/GRCh38_GIABv3_no_alt_analysis_set_maskedGRC_decoys_MAP2K3_KMT2C_KCNJ18.fasta \
+  --fasta_index ./ref/GRCh38_GIABv3_no_alt_analysis_set_maskedGRC_decoys_MAP2K3_KMT2C_KCNJ18.fasta.fai \
+  --outdir results \
+  --dorado_model dna_r10.4.1_e8.2_400bps_fast@v5.0.0 \ # important to use the corresponding dorado_model for basecalling
+  --reads_format fast5 \
+  --use_gpu true
+```
+
+#### Using BAM files
+
+prepare samplesheet_bam.csv
+
+```csv
+id,sample,flowcell,input_path,batch,kit
+sample1_bam,sample1,flowcell1,/home/yu_j/smbshare/sample1,20251127,LSK114
+```
+
+Example command:
+
+```bash
+nextflow run ./FA-NIVA \
+  -profile FA_NIVA,docker \
+  --input samplesheet_bam.csv \
+  --fasta ./ref/GRCh38_GIABv3_no_alt_analysis_set_maskedGRC_decoys_MAP2K3_KMT2C_KCNJ18.fasta \
+  --fasta_index ./ref/GRCh38_GIABv3_no_alt_analysis_set_maskedGRC_decoys_MAP2K3_KMT2C_KCNJ18.fasta.fai \
+  --outdir results \
+  --reads_format bam \ # dorado basecalling step will be skipped
+  --use_gpu true
+```
+
+---
+
+## 3 Configuration
+
+FA-NIVA can be configured through a combination of command-line parameters and configuration files. Most users only need to adjust the input sample sheet, reference genome settings, and computational resources before running the pipeline.
+
+### 3.1 Key Parameters
+
+| Parameter | Description |
+|-----------|-------------|
+| `--input` | Path to the sample sheet describing the input samples. See [Samplesheet Format](#21-samplesheet-format). Optional if configured in `conf/profile.config`. |
+| `--outdir` | Output directory where pipeline results will be written. |
+| `--genome` | Reference genome build (`GRCh38` or `GRCh37`). |
+| `--fasta` | Path to the reference genome FASTA file. Optional if configured in `conf/profile.config`. |
+| `--fasta_index` | Path to the corresponding FASTA index (`.fai`) file. Optional if configured in `conf/profile.config`. |
+| `--use_gpu` | Enable GPU acceleration for Dorado basecalling and DeepVariant variant calling. Optional if configured in `conf/profile.config`. |
+| `--dorado_model` | Important to use the corresponding dorado_model for basecalling. Will be skipped if input is bam. Optional if configured in `conf/profile.config`. |
+| `--reads_format` | Optional if configured in `conf/profile.config`.  |
+
+### 3.2 Configuration Files
+
+The following files may require modification depending on the computing environment and analysis requirements.
+
+| File | Description |
+|------|-------------|
+| `assets/samplesheet.csv` | Defines the input samples. The `input_path` field should contain the absolute path to the directory containing the input sequencing files (`*.pod5`, `*.fast5`, `*.fastq.gz`, or `*.bam`). |
+| `conf/profile.config` | Defines reference genome resources, Dorado model settings, and AnnotSV database locations. Reference paths can also be supplied using `--fasta` and `--fasta_index`. |
+| `conf/base.config` | Specifies computational resources such as CPU, memory, and GPU allocation. |
+| `nextflow.config` | Controls workflow components and software modules. Structural variant annotation is disabled by default and must be enabled if AnnotSV analysis is required. |
+| `assets/SNV_modify_regions.csv` | Defines genomic regions used for SNV–SV joint phasing analysis. Modify this file to analyze additional genomic regions. |
+
+### 3.3 Computational Resources
+
+Resource limits can be adjusted in `conf/base.config`.
+
+| Setting | Default | Description |
+|----------|---------|-------------|
+| `max_cpus` | `64` | Maximum number of CPUs allocated to a process. |
+| `max_memory` | `256.GB` | Maximum memory allocated to a process. |
+| `max_time` | `256.h` | Maximum execution time allocated to a process. |
+
+
+> **Note**
+>
+> GPU resources are required for Dorado basecalling and recommended for DeepVariant variant calling.
+>
+> To maximize stability on shared HPC systems, we recommend processing one sample at a time and allocating a single GPU per analysis:
+>
+> ```bash
+> --use_gpu 1
+> ```
+>
+> Using a dedicated GPU minimizes resource contention and can improve overall workflow performance and scheduling efficiency.
+
+For a complete list of available parameters and advanced options, see [`nextflow_schema.json`](nextflow_schema.json).
 
 
 ---
 
-## Configuration
-
-### Execution Profiles
-
-| Profile | Use Case |
-|---------|----------|
-| **docker** | Run with Docker containers |
-| **singularity** | Run with Singularity containers |
-| **conda** | Use Conda environments |
-| **mamba** | Use Mamba (faster Conda) |
-| **podman** | Run with Podman |
-| **shifter** | Run with Shifter container engine |
-| **charliecloud** | Run with Charliecloud containers |
-| **arm** | Run on ARM-based systems (e.g., Mac M1/M2) |
-| **ris** | Execute on RIS cluster with LSF scheduler |
-| **test** | Quick validation run with minimal data |
-| **fa_niva** | Custom FA-NIVA configuration |
-| **gitpod** | Cloud development environment |
-
-### Key Parameters
-
-#### Input/Output
-- `--input` : Path to samplesheet CSV *(required)*
-- `--outdir` : Output directory *(required)*
-- `--genome` : Reference genome build (e.g., `GRCh38`, `GRCh37`)
-
-#### Basecalling
-- `--use_gpu` : Enable GPU acceleration for Dorado (default: `true`)
-- `--nanopore_reads_type` : Dorado model type (default: `ont_r10_q20`)
-  - Options: `ont_r9_4_1d`, `ont_r10_q20`, `ont_r10_q20_5mCG_5hmCG`
-
-#### Structural Variants
-- `--run_annotsv` : Enable AnnotSV for structural variant annotation (default: `false`)
-- `--annotsvGenomeBuild` : Genome build for AnnotSV (default: `GRCh38`)
-- `--annotsvMode` : AnnotSV mode - `full`, `split`, or `both` (default: `both`)
-
-#### Resource Management
-- `--max_cpus` : Maximum CPUs per task (default: `64`)
-- `--max_memory` : Maximum memory per task (default: `256.GB`)
-- `--max_time` : Maximum execution time per task (default: `256.h`)
-
-#### Publishing
-- `--publish_dir_mode` : How to publish results - `copy`, `link`, or `rellink` (default: `copy`)
-- `--publish_sorted_bam` : Publish sorted BAM files (default: `false`)
-
-#### MultiQC
-- `--multiqc_config` : Custom MultiQC configuration file
-- `--multiqc_title` : Title for MultiQC report
-- `--multiqc_logo` : Path to logo for MultiQC report
-
-For all available parameters, see [`nextflow_schema.json`](nextflow_schema.json).
-
----
-
-## Output Structure
+## 4 Output Structure
 
 Results are organized in the specified `--outdir`:
 
-```
-results/
-├── basecalling/           # Dorado basecalling results
-│   ├── *.fastq.gz        # Basecalled reads
-│   └── *.bam             # Alignment BAM files
-├── alignment/             # Minimap2 aligned BAM files
-│   ├── *.sorted.bam      # Sorted BAM files
-│   └── *.sorted.bam.bai  # BAM index files
-├── variants/              # DeepVariant VCF files
-│   ├── *.vcf.gz          # Variant calls
-│   └── *.vcf.gz.tbi      # VCF index files
-├── annotation/            # AnnotSV structural variant annotations
-│   ├── *.annotated.tsv   # Annotated SVs
-│   └── *.unannotated.tsv # Unannotated SVs
-├── multiqc/               # Quality control report
-│   └── multiqc_report.html
-└── pipeline_info/         # Execution metadata
-    ├── execution_timeline_*.html
-    ├── execution_report_*.html
-    ├── execution_trace_*.txt
-    └── pipeline_dag_*.html
-```
 
----
-
-## Pipeline Features
-
-✅ **GPU Support**: Optional GPU acceleration for Dorado basecalling and DeepVariant variant calling  
-✅ **Multi-Platform**: Support for Docker, Singularity, Conda, Podman, Shifter, and Charliecloud  
-✅ **Cluster Integration**: LSF scheduler support for RIS clusters  
-✅ **Quality Control**: Built-in MultiQC reporting  
-✅ **Structural Variants**: Optional AnnotSV annotation for structural variants  
-✅ **Comprehensive Logging**: Execution timeline, reports, DAG visualization, and trace files  
-✅ **Resource Management**: Configurable resource limits per task  
-✅ **Validation**: Built-in parameter schema validation  
-
----
-
-## Execution Examples
-
-### Local Docker Execution
-
-```bash
-nextflow run UKWgenommedizin/FA-NIVA \
-  -profile docker \
-  --input samplesheet.csv \
-  --genome GRCh38 \
-  --outdir ./results \
-  --use_gpu true
-```
-
-### Singularity on HPC
-
-```bash
-nextflow run UKWgenommedizin/FA-NIVA \
-  -profile singularity \
-  --input samplesheet.csv \
-  --genome GRCh38 \
-  --outdir ./results
-```
-
-### With Structural Variant Annotation
-
-```bash
-nextflow run UKWgenommedizin/FA-NIVA \
-  -profile docker \
-  --input samplesheet.csv \
-  --genome GRCh38 \
-  --outdir ./results \
-  --run_annotsv true \
-  --annotsvGenomeBuild GRCh38
-```
-
-### Conda Environment
-
-```bash
-nextflow run UKWgenommedizin/FA-NIVA \
-  -profile conda \
-  --input samplesheet.csv \
-  --genome GRCh38 \
-  --outdir ./results
-```
-
-### Test Run
-
-```bash
-nextflow run UKWgenommedizin/FA-NIVA \
-  -profile test,docker \
-  --outdir ./test_results
-```
-
-### Mac M1/M2 (ARM)
-
-```bash
-nextflow run UKWgenommedizin/FA-NIVA \
-  -profile arm,docker \
-  --input samplesheet.csv \
-  --genome GRCh38 \
-  --outdir ./results
-```
-
-### RIS Cluster with GPU
-
-```bash
-nextflow run UKWgenommedizin/FA-NIVA \
-  -profile ris \
-  --input samplesheet.csv \
-  --genome GRCh38 \
-  --outdir ./results \
-  --use_gpu true
-```
-
----
-
-## System Requirements
-
-### Minimum
-- 8 CPU cores
-- 32 GB RAM
-- 50 GB disk space per sample
-
-### Recommended (with GPU)
-- 16+ CPU cores
-- 64 GB RAM
-- NVIDIA GPU (RTX 3090 or better recommended)
-- 500 GB+ disk space per sample
-
-### Environment Variables
-
-The pipeline sets the following environment variables to prevent package conflicts:
-
-```bash
-PYTHONNOUSERSITE=1          # Prevent system Python packages
-R_PROFILE_USER=/.Rprofile   # R user profile
-R_ENVIRON_USER=/.Renviron   # R environment variables
-JULIA_DEPOT_PATH=/usr/local/share/julia  # Julia packages directory
-```
-
----
-
-## Troubleshooting
-
-### Common Issues
-
-**Docker socket permission denied**
-```bash
-# Add user to docker group (Linux)
-sudo usermod -aG docker $USER
-```
-
-**GPU not recognized**
-```bash
-# Verify NVIDIA Docker runtime
-docker run --rm --gpus all nvidia/cuda:11.0-base nvidia-smi
-```
-
-**Out of memory errors**
-```bash
-# Increase available memory or adjust max_memory parameter
-nextflow run ... --max_memory 128.GB
-```
-
-**Singularity container caching**
-```bash
-# Clear Singularity cache if experiencing issues
-rm -rf $HOME/.singularity/cache
-```
-
-**Permission issues with output files**
-```bash
-# Adjust publish_dir_mode to avoid permission problems
-nextflow run ... --publish_dir_mode symlink
+```text
+<sample_id>/
+├── multiqc/                          # MultiQC quality-control reports
+│   ├── multiqc_data/                 # Raw data used by MultiQC
+│   ├── multiqc_plots/                # Figures generated by MultiQC
+│   ├── multiqc_report.html           # Interactive MultiQC report
+│   └── versions.yml                  # Software versions collected by MultiQC
+│
+├── pipeline_info/                    # Workflow execution metadata
+│   ├── execution_report_<time>.html  # Execution summary and resource usage
+│   ├── execution_timeline_<time>.html# Workflow timeline
+│   ├── execution_trace_<time>.txt    # Process-level execution details
+│   ├── execution_dag_<time>.html     # Workflow DAG visualization
+│   ├── samplesheet.valid.csv         # Validated sample sheet
+│   └── software_versions.yml         # Software versions used in the analysis
+│
+├── <sample_id>/                      # Sample-specific analysis results
+│   ├── basecaller/                   # Dorado basecalling outputs
+│   ├── deepvariant/                  # Small-variant calling results
+│   ├── pbmm2/                        # Read alignment files (BAM/CRAM)
+│   ├── sawfish/                      # Structural-variant calling results
+│   └── whatshap/                     # Phasing analysis results
+│
+├── <sample_id>.html                  # PycoQC sequencing quality report
+└── <sample_id>.json                  # Machine-readable QC and run statistics
 ```
 
 ---
@@ -444,12 +338,12 @@ FA-NIVA/
 If you use FA-NIVA in your research, please cite:
 
 ```bibtex
-@software{fa_niva_2024,
-  title={FA-NIVA: Nextflow pipeline for analysis of Nanopore sequencing for Fanconi diagnosis},
-  author={Yu, Jiangyan},
-  year={2024},
-  url={https://github.com/UKWgenommedizin/FA-NIVA}
-}
+@article{neurgaonkar2026faniva, 
+  title = {FA-NIVA: A Nextflow framework for automated analysis of Nanopore-based long-read sequencing data for genetic analysis in Fanconi anemia}, 
+  author = {Neurgaonkar, Priya Satish and Dierolf, Michelle and O'Gorman, Luke and Remmele, Christian and Schäffer, Judith and Popp, Isabell and Borst, Angela and Rost, Simone and Ankenbrand, Markus J. and Kratz, Christian P. and Bergmann, Anke K. and Kalb, Reinhard and Yu, Jiangyan}, 
+  journal = {medRxiv}, 
+  year = {2026}, 
+  doi = {10.64898/2026.02.27.26346867} }
 ```
 
 See [`CITATIONS.md`](CITATIONS.md) for citations of tools and methods used.
@@ -458,6 +352,9 @@ See [`CITATIONS.md`](CITATIONS.md) for citations of tools and methods used.
 
 ## Authors
 
+- **Priya Satish Neurgaonkar** 
+- **Markus J. Ankenbrand** - markus.ankenbrand@uni-wuerzburg.de
+- **Christian Remmele** - remmele_c@ukw.de
 - **Jiangyan Yu** - jiangyan.yu@ukw.de
 
 ## License
@@ -470,6 +367,32 @@ This project is licensed under the [MIT License](LICENSE).
 - **Discussions**: [GitHub Discussions](https://github.com/UKWgenommedizin/FA-NIVA/discussions)
 - **Contributing**: Please see [CONTRIBUTING.md](CONTRIBUTING.md) for guidelines
 
+## Notes and Implementation Details
+
+### AnnotSV Installation
+
+The current AnnotSV container image does not include the annotation database (`annotationsDir`). Therefore, the annotation database must be installed separately before running structural variant annotation.
+
+Install the AnnotSV annotation resources according to the official instructions:
+
+https://github.com/lgmgeo/AnnotSV/blob/master/bin/INSTALL_annotations.sh
+
+After installation, update the corresponding annotation database path in:
+
+```text
+conf/profile.config
+```
+
+and enable AnnotSV annotation as described in the Configuration section.
+
+### DeepVariant Configuration
+
+FA-NIVA uses the **ONT_R104** model for small-variant calling:
+
+```text
+model_type = ONT_R104
+```
+
 ## Additional Resources
 
 - [Nextflow Documentation](https://www.nextflow.io/)
@@ -477,3 +400,32 @@ This project is licensed under the [MIT License](LICENSE).
 - [Dorado Basecaller](https://github.com/nanoporetech/dorado)
 - [DeepVariant](https://github.com/google/deepvariant)
 - [AnnotSV](https://lbgi.fr/AnnotSV/)
+
+### Workflow Origins and Adaptations
+
+The FA-NIVA workflow was initially developed using components and workflow structures from the following projects (accessed 2024-12-10):
+
+1. https://github.com/nf-core/nanoseq
+2. https://github.com/dhslab/nf-core-wgsnano
+
+#### Container Adaptations
+
+Due to institutional firewall restrictions that limited access to specific container registries, selected container images were mirrored to Docker Hub for use within FA-NIVA.
+
+| Software | Original Source | Version Used |
+|-----------|----------------|--------------|
+| Dorado | https://github.com/dhslab/dhslab-docker-images/pkgs/container/docker-dorado | 241016 |
+| WhatsHap | https://github.com/dhslab/dhslab-docker-images/pkgs/container/docker-whatshap | 240302 |
+
+These mirrored images are functionally equivalent to the corresponding images provided by the DHSLab container repository and were used to ensure reproducible execution within the local computing environment.
+
+### Reproducibility
+
+Software versions used during each pipeline execution are recorded in:
+
+```text
+pipeline_info/software_versions.yml
+multiqc/versions.yml
+```
+
+These files should be retained together with the analysis results to ensure full reproducibility.
