@@ -68,36 +68,36 @@ FA-NIVA/
 
 Before running FA-NIVA, ensure that the following software and resources are available:
 
--Nextflow. FA-NIVA requires Nextflow ≥ 22.10.1. Install Nextflow according to the official documentation: https://www.nextflow.io/docs/latest/install.html
+- **Nextflow** ≥ 22.10.1  
+  Install Nextflow according to the official documentation:  
+  https://www.nextflow.io/docs/latest/install.html
 
--Container Engine. The pipeline requires one of the following execution environments:
+- **Container engine** (one of the following):
+  - Docker — recommended and fully tested
+  - Singularity/Apptainer — supported
+  - Conda/Mamba — supported
+  - Podman — supported
+  - Shifter — supported
+  - Charliecloud — supported
 
-- **Docker** — Recommended and fully tested
-- **Singularity/Apptainer** — Supported
-- **Conda/Mamba** — Supported
-- **Podman** — Supported
-- **Shifter** — Supported
-- **Charliecloud** — Supported
+- **Test input data (BAM format)**  
+  Example BAM files for testing the pipeline are available on Zenodo:  
+  https://zenodo.org/records/17284961  
 
--Reference Genome Files. FA-NIVA requires a reference genome compatible with the selected genome build (e.g., GRCh38). Two deployment scenarios are supported:
+- **Reference genome files**  
+  FA-NIVA requires a reference genome compatible with the selected build (e.g., GRCh38).
+
+The pipeline supports two deployment modes:
 
 ### 1.2 Basic Usage
 
-Option A: HPC Environment with Internet Access. If the compute environment has internet access, the required reference files will be downloaded automatically during pipeline execution.
+FA-NIVA can be executed in two modes depending on compute environment connectivity.
 
-Option B: HPC Environment without Internet Access. If external downloads are restricted, the reference genome files must be provided manually through command-line parameters or a custom configuration file. Reference genomes can be obtained from: https://github.com/PacificBiosciences/reference_genomes
+---
 
-The following files are required:
+#### Option A: HPC environment with internet access
 
-```
-GRCh38_reference/
-├── genome.fasta
-├── genome.fasta.fai
-```
-
-#### 1.2.1 Basic Usage A: HPC Environment with Internet Access
-
-The pipeline will automatically download the required reference resources from AWS.
+If internet access is available, all required reference files (e.g., genome FASTA, indices) will be automatically downloaded during execution.
 
 ```bash
 nextflow run UKWgenommedizin/FA-NIVA \
@@ -109,45 +109,40 @@ nextflow run UKWgenommedizin/FA-NIVA \
   --use_gpu true
 ```
 
-Parameter description:
-| Parameter | Description |
-|-----------|-------------|
-| `--input` | Sample sheet describing input samples. See [Samplesheet Format](#samplesheet-format) for details. |
-| `--genome` | Reference genome build (`GRCh38` or `GRCh37`) |
-| `--outdir` | Output directory for pipeline results |
-| `--reads_format` | Set reads format as bam, then dorado basecalling step will be skipped |
-| `--use_gpu` | Enable GPU acceleration for Dorado and DeepVariant |
+> **Note:** For test runs using BAM files, the `input_path` in the sample sheet should point to the directory containing the downloaded Zenodo BAM test dataset.
 
-#### 1.2.2 Basic Usage B: HPC Environment without Internet Access
+---
 
-Clone the repository locally and copy it to HPC environment:
+#### Option B: HPC environment without internet access
 
-```bash
-git clone https://github.com/UKWgenommedizin/FA-NIVA.git
+If external downloads are restricted, all reference genome files must be provided manually.
+
+Reference genomes can be obtained from:  
+https://github.com/PacificBiosciences/reference_genomes
+
+For the GRCh38, one can download bundle for human_GRCh38_no_alt_analysis_set
+
+Required files:
+
+```text
+GRCh38_reference/
+├── human_GRCh38_no_alt_analysis_set.fasta
+├── human_GRCh38_no_alt_analysis_set.fasta.fai
 ```
 
-Run the pipeline while explicitly providing the reference genome files:
+These files must be passed via command-line parameters:
 
 ```bash
-nextflow run ./FA-NIVA \ # Local path to the cloned FA-NIVA GitHub repository
+nextflow run UKWgenommedizin/FA-NIVA \
   -profile fa_niva,docker \
   --input samplesheet.csv \
-  --fasta ./ref/GRCh38_GIABv3_no_alt_analysis_set_maskedGRC_decoys_MAP2K3_KMT2C_KCNJ18.fasta \
-  --fasta_index ./ref/GRCh38_GIABv3_no_alt_analysis_set_maskedGRC_decoys_MAP2K3_KMT2C_KCNJ18.fasta.fai \
+  --genome GRCh38 \
+  --fasta /path/to/GRCh38_reference/genome.fasta \
+  --fasta_index /path/to/GRCh38_reference/genome.fasta.fai \
   --outdir results \
   --reads_format bam \
   --use_gpu true
 ```
-
-Parameter description:
-| Parameter | Description |
-|-----------|-------------|
-| `-profile fa_niva,docker` | Uses the FA-NIVA configuration together with Docker execution. Note that there must be **no spaces** between `fa_niva,docker`. |
-| `--fasta` | Path to the reference genome FASTA file. |
-| `--fasta_index` | Path to the corresponding FASTA index (`.fai`) file. |
-| `--outdir` | Output directory where all pipeline results will be written. |
-| `--reads_format` | Set reads format as bam, then dorado basecalling step will be skipped |
-| `--use_gpu` | Enable GPU acceleration for Dorado and DeepVariant when supported by the available hardware. |
 
 For cluster-specific settings, resource allocation, and custom configurations, see the [Configuration](#3-configuration) section below.
 
