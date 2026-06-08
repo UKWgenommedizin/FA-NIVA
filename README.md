@@ -13,21 +13,58 @@ FA-NIVA processes Nanopore sequencing data to:
 
 ---
 
+## Pipeline Architecture
+
+```
+FA-NIVA/
+├── bin/                    # Helper scripts (Python, Bash)
+├── conf/                   # Configuration files
+│   ├── base.config        # Base process configuration
+│   ├── modules.config     # Process-specific modules
+│   ├── test.config        # Test profile configuration
+│   └── profile.config     # FA-NIVA specific settings
+├── docker_files/          # Docker container definitions
+├── lib/                   # Groovy utility libraries
+├── modules/               # Nextflow DSL2 process modules
+│   ├── nf-core/          # nf-core modules
+│   └── local/            # Custom modules
+├── subworkflows/          # Workflow subcomponents
+│   ├── nf-core/          # nf-core subworkflows
+│   └── local/            # Custom subworkflows
+├── workflows/             # Main workflow definitions
+├── assets/                # Templates and reference data
+├── main.nf                # Pipeline entry point
+├── nextflow.config        # Main configuration
+└── nextflow_schema.json   # Parameter schema and validation
+```
+
+---
+
 ## 📑 Table of Contents
 
-[1. Quick Start](#1-quick-start-using-example-files) <br/>
-[2. Input](#2-input-data) <br/>
-[2.1 Samplesheet Format](#21-samplesheet-format) <br/>
-[2.2 Supported_Input](#22-supported-input-types) <br/>
-[3. Configuration](#3-configuration) <br/>
-[4. Output](#output-structure) 
-[Citation](#citation) |
+- [1. Quick Start](#1-quick-start-using-example-files)
+
+- [2. Input](#2-input-data)
+  - [2.1 Samplesheet Format](#21-samplesheet-format)
+  - [2.2 Supported Input Types](#22-supported-input-types)
+
+- [3. Configuration](#3-configuration)
+  - [3.1 Key Parameters](#31-key-parameters)
+  - [3.2 Configuration Files](#32-configuration-files)
+  - [3.3 Computational Resources](#33-computational-resources)
+
+- [4. Output](#4-output-structure)
+
+- [Citation](#citation)
+- [Authors](#authors)
+- [License](#license)
+- [Notes](#notes-and-implementation-details)
 
 ---
 
 ## 1. Quick Start Using Example Files
 
-### Prerequisites
+### 1.1 Prerequisites
 
 Before running FA-NIVA, ensure that the following software and resources are available:
 
@@ -44,7 +81,7 @@ Before running FA-NIVA, ensure that the following software and resources are ava
 
 -Reference Genome Files. FA-NIVA requires a reference genome compatible with the selected genome build (e.g., GRCh38). Two deployment scenarios are supported:
 
-### Basic Usage
+### 1.2 Basic Usage
 
 Option A: HPC Environment with Internet Access. If the compute environment has internet access, the required reference files will be downloaded automatically during pipeline execution.
 
@@ -58,7 +95,7 @@ GRCh38_reference/
 ├── genome.fasta.fai
 ```
 
-### Basic Usage A: HPC Environment with Internet Access
+#### 1.2.1 Basic Usage A: HPC Environment with Internet Access
 
 The pipeline will automatically download the required reference resources from AWS.
 
@@ -81,7 +118,7 @@ Parameter description:
 | `--reads_format` | Set reads format as bam, then dorado basecalling step will be skipped |
 | `--use_gpu` | Enable GPU acceleration for Dorado and DeepVariant |
 
-### Basic Usage B: HPC Environment without Internet Access
+#### 1.2.2 Basic Usage B: HPC Environment without Internet Access
 
 Clone the repository locally and copy it to HPC environment:
 
@@ -144,7 +181,7 @@ FA-NIVA supports three starting points:
 
 *When input is bam file, dorado basecalling step will be skipped.
 
-#### Using POD5 files
+#### 2.2.1 Using POD5 files
 
 prepare samplesheet_pod5.csv
 
@@ -168,7 +205,7 @@ nextflow run ./FA-NIVA \
 ```
 
 
-#### Using FAST5 files
+#### 2.2.2 Using FAST5 files
 
 prepare samplesheet_fast5.csv
 
@@ -191,7 +228,7 @@ nextflow run ./FA-NIVA \
   --use_gpu true
 ```
 
-#### Using BAM files
+#### 2.2.3 Using BAM files
 
 prepare samplesheet_bam.csv
 
@@ -254,7 +291,6 @@ Resource limits can be adjusted in `conf/base.config`.
 | `max_memory` | `256.GB` | Maximum memory allocated to a process. |
 | `max_time` | `256.h` | Maximum execution time allocated to a process. |
 
-
 > **Note**
 >
 > GPU resources are required for Dorado basecalling and recommended for DeepVariant variant calling.
@@ -306,33 +342,6 @@ Results are organized in the specified `--outdir`:
 
 ---
 
-## Pipeline Architecture
-
-```
-FA-NIVA/
-├── bin/                    # Helper scripts (Python, Bash)
-├── conf/                   # Configuration files
-│   ├── base.config        # Base process configuration
-│   ├── modules.config     # Process-specific modules
-│   ├── test.config        # Test profile configuration
-│   └── profile.config     # FA-NIVA specific settings
-├── docker_files/          # Docker container definitions
-├── lib/                   # Groovy utility libraries
-├── modules/               # Nextflow DSL2 process modules
-│   ├── nf-core/          # nf-core modules
-│   └── local/            # Custom modules
-├── subworkflows/          # Workflow subcomponents
-│   ├── nf-core/          # nf-core subworkflows
-│   └── local/            # Custom subworkflows
-├── workflows/             # Main workflow definitions
-├── assets/                # Templates and reference data
-├── main.nf                # Pipeline entry point
-├── nextflow.config        # Main configuration
-└── nextflow_schema.json   # Parameter schema and validation
-```
-
----
-
 ## Citation
 
 If you use FA-NIVA in your research, please cite:
@@ -361,11 +370,6 @@ See [`CITATIONS.md`](CITATIONS.md) for citations of tools and methods used.
 
 This project is licensed under the [MIT License](LICENSE).
 
-## Support & Contributing
-
-- **Issues**: [GitHub Issues](https://github.com/UKWgenommedizin/FA-NIVA/issues)
-- **Discussions**: [GitHub Discussions](https://github.com/UKWgenommedizin/FA-NIVA/discussions)
-- **Contributing**: Please see [CONTRIBUTING.md](CONTRIBUTING.md) for guidelines
 
 ## Notes and Implementation Details
 
