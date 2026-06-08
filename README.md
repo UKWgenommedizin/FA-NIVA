@@ -133,7 +133,7 @@ GRCh38_reference/
 These files must be passed via command-line parameters:
 
 ```bash
-nextflow run UKWgenommedizin/FA-NIVA \
+nextflow run ./FA-NIVA \ # local path to the downloaded folder from git repo
   -profile fa_niva,docker \
   --input samplesheet.csv \
   --genome GRCh38 \
