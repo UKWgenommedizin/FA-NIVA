@@ -51,7 +51,7 @@ process DEEPVARIANT {
 
         /opt/deepvariant/bin/run_deepvariant \\
             --num_shards=${task.cpus} \\
-            --model_type=PACBIO \\
+            --model_type=ONT_R104 \\
             --disable_small_model \\
             --postprocess_variants_extra_args='only_keep_pass=true' \\
             --ref=${fasta} \\
