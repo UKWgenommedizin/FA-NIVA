@@ -55,10 +55,8 @@ FA-NIVA/
 
 - [4. Output](#4-output-structure)
 
-- [Citation](#citation)
-- [Authors](#authors)
-- [License](#license)
-- [Notes](#notes-and-implementation-details)
+- [Citation/Authors/License](#citation)
+- [Notes and Implementation Details](#notes-and-implementation-details)
 
 ---
 
@@ -83,6 +81,7 @@ Before running FA-NIVA, ensure that the following software and resources are ava
 - **Test input data (BAM format)**  
   Example BAM files for testing the pipeline are available on Zenodo:  
   https://zenodo.org/records/17284961  
+  For test purpose, only input_path column in samplesheet.csv shall be adjusted to your local path to the downloaded folder.
 
 - **Reference genome files**  
   FA-NIVA requires a reference genome compatible with the selected build (e.g., GRCh38).
