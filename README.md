@@ -245,6 +245,11 @@ nextflow run ./FA-NIVA \
   --use_gpu true
 ```
 
+#### Barcoded Datasets 
+The default FA-NIVA workflow is configured for single-sample analysis and does not perform barcode demultiplexing. For datasets containing multiple barcoded samples, users should perform barcode demultiplexing during the basecalling step using Dorado's native barcode support. Barcode demultiplexing can be enabled by modifying the Dorado command in: `modules/local/DORADO_BASECALLER.nf` and adding the appropriate Dorado barcode-related parameters (e.g., barcode kit specification and demultiplexing options) according to the Dorado documentation. 
+
+FA-NIVA does not automatically detect or process multiplexed datasets. If barcode demultiplexing is required, users must customize the Dorado basecalling module before running the workflow. Because Dorado provides built-in support for barcode demultiplexing, users can adapt the workflow to their experimental design by editing the basecalling command and supplying the barcode configuration appropriate for their sequencing run.
+
 ---
 
 ## 3 Configuration
