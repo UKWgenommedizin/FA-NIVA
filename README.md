@@ -138,8 +138,8 @@ nextflow run ./FA-NIVA \ # local path to the downloaded folder from git repo
   -profile fa_niva,docker \
   --input samplesheet.csv \
   --genome GRCh38 \
-  --fasta /path/to/GRCh38_reference/genome.fasta \
-  --fasta_index /path/to/GRCh38_reference/genome.fasta.fai \
+  --fasta /path/to/GRCh38_reference/human_GRCh38_no_alt_analysis_set.fasta \
+  --fasta_index /path/to/GRCh38_reference/human_GRCh38_no_alt_analysis_set.fasta.fai \
   --outdir results \
   --reads_format bam \
   --use_gpu true
