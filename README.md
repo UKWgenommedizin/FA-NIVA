@@ -132,8 +132,9 @@ GRCh38_reference/
 These files must be passed via command-line parameters:
 
 ```bash
+# ./FA-NIVA is the local path to the folder cloned from the git repo
 git clone -b main https://github.com/UKWgenommedizin/FA-NIVA
-nextflow run ./FA-NIVA \ # local path to the downloaded folder from git repo
+nextflow run ./FA-NIVA \
   -profile fa_niva,docker \
   --input samplesheet.csv \
   --genome GRCh38 \
@@ -189,15 +190,17 @@ Example command:
 
 ```bash
 nextflow run ./FA-NIVA \
-  -profile FA_NIVA,docker \
+  -profile fa_niva,docker \
   --input samplesheet_pod5.csv \
   --fasta ./ref/GRCh38_GIABv3_no_alt_analysis_set_maskedGRC_decoys_MAP2K3_KMT2C_KCNJ18.fasta \
   --fasta_index ./ref/GRCh38_GIABv3_no_alt_analysis_set_maskedGRC_decoys_MAP2K3_KMT2C_KCNJ18.fasta.fai \
   --outdir results \
-  --dorado_model dna_r10.4.1_e8.2_400bps_fast@v5.0.0 \ # important to use the corresponding dorado_model for basecalling
+  --dorado_model dna_r10.4.1_e8.2_400bps_fast@v5.0.0 \
   --reads_format pod5 \
   --use_gpu true
 ```
+
+> **Note:** `--dorado_model` must match the model used for basecalling.
 
 
 #### 2.2.2 Using FAST5 files
@@ -213,15 +216,17 @@ Example command:
 
 ```bash
 nextflow run ./FA-NIVA \
-  -profile FA_NIVA,docker \
+  -profile fa_niva,docker \
   --input samplesheet_fast5.csv \
   --fasta ./ref/GRCh38_GIABv3_no_alt_analysis_set_maskedGRC_decoys_MAP2K3_KMT2C_KCNJ18.fasta \
   --fasta_index ./ref/GRCh38_GIABv3_no_alt_analysis_set_maskedGRC_decoys_MAP2K3_KMT2C_KCNJ18.fasta.fai \
   --outdir results \
-  --dorado_model dna_r10.4.1_e8.2_400bps_fast@v5.0.0 \ # important to use the corresponding dorado_model for basecalling
+  --dorado_model dna_r10.4.1_e8.2_400bps_fast@v5.0.0 \
   --reads_format fast5 \
   --use_gpu true
 ```
+
+> **Note:** `--dorado_model` must match the model used for basecalling.
 
 #### 2.2.3 Using BAM files
 
@@ -236,14 +241,16 @@ Example command:
 
 ```bash
 nextflow run ./FA-NIVA \
-  -profile FA_NIVA,docker \
+  -profile fa_niva,docker \
   --input samplesheet_bam.csv \
   --fasta ./ref/GRCh38_GIABv3_no_alt_analysis_set_maskedGRC_decoys_MAP2K3_KMT2C_KCNJ18.fasta \
   --fasta_index ./ref/GRCh38_GIABv3_no_alt_analysis_set_maskedGRC_decoys_MAP2K3_KMT2C_KCNJ18.fasta.fai \
   --outdir results \
-  --reads_format bam \ # dorado basecalling step will be skipped
+  --reads_format bam \
   --use_gpu true
 ```
+
+> **Note:** when the input is BAM, the dorado basecalling step is skipped.
 
 #### Barcoded Datasets 
 The default FA-NIVA workflow is configured for single-sample analysis and does not perform barcode demultiplexing. For datasets containing multiple barcoded samples, users should perform barcode demultiplexing during the basecalling step using Dorado's native barcode support. Barcode demultiplexing can be enabled by modifying the Dorado command in: `modules/local/DORADO_BASECALLER.nf` and adding the appropriate Dorado barcode-related parameters (e.g., barcode kit specification and demultiplexing options) according to the Dorado documentation. 
