@@ -6,7 +6,7 @@ A comprehensive Nextflow pipeline for analyzing long-read Nanopore sequencing da
 
 FA-NIVA processes Nanopore sequencing data to:
 - Perform high-accuracy basecalling using Dorado with GPU acceleration
-- Align reads to reference genome using pbmm2
+- Align reads to a reference genome using pbmm2
 - Call small variants (SNVs/indels) using DeepVariant with GPU support
 - Annotate structural variants using AnnotSV
 - Generate comprehensive quality control reports with MultiQC
@@ -81,7 +81,7 @@ Before running FA-NIVA, ensure that the following software and resources are ava
 - **Test input data (BAM format)**  
   Example BAM files for testing the pipeline are available on Zenodo:  
   https://zenodo.org/records/17284961  
-  For test purpose, only input_path column in samplesheet.csv shall be adjusted to your local path to the downloaded folder.
+  For test purposes, only the `input_path` column in samplesheet.csv needs to be adjusted to your local path to the downloaded folder.
 
 - **Reference genome files**  
   FA-NIVA requires a reference genome compatible with the selected build (e.g., GRCh38).
@@ -119,7 +119,7 @@ If external downloads are restricted, all reference genome files must be provide
 Reference genomes can be obtained from:  
 https://github.com/PacificBiosciences/reference_genomes
 
-For the GRCh38, one can download bundle for human_GRCh38_no_alt_analysis_set
+For GRCh38, one can download the bundle for human_GRCh38_no_alt_analysis_set
 
 Required files:
 
@@ -174,11 +174,11 @@ FA-NIVA supports three starting points:
 | FASTQ      | Alignment            | Basecalled FASTQ files (`*.fastq.gz`)                                  | Fully tested      |
 | BAM*       | Variant Calling      | Coordinate-sorted BAM file (`*.bam`) and corresponding index (`*.bai`) | Fully tested      |
 
-*When input is bam file, dorado basecalling step will be skipped.
+*When input is a bam file, the dorado basecalling step will be skipped.
 
 #### 2.2.1 Using POD5 files
 
-prepare samplesheet_pod5.csv
+Prepare samplesheet_pod5.csv
 
 ```csv
 id,sample,flowcell,input_path,batch,kit
@@ -202,7 +202,7 @@ nextflow run ./FA-NIVA \
 
 #### 2.2.2 Using FAST5 files
 
-prepare samplesheet_fast5.csv
+Prepare samplesheet_fast5.csv
 
 ```csv
 id,sample,flowcell,input_path,batch,kit
@@ -225,7 +225,7 @@ nextflow run ./FA-NIVA \
 
 #### 2.2.3 Using BAM files
 
-prepare samplesheet_bam.csv
+Prepare samplesheet_bam.csv
 
 ```csv
 id,sample,flowcell,input_path,batch,kit
