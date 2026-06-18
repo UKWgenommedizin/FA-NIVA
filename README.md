@@ -149,7 +149,7 @@ For cluster-specific settings, resource allocation, and custom configurations, s
 
 ---
 
-## 2 Input Data
+## 2. Input Data
 
 ### 2.1 Samplesheet Format
 
@@ -259,7 +259,7 @@ FA-NIVA does not automatically detect or process multiplexed datasets. If barcod
 
 ---
 
-## 3 Configuration
+## 3. Configuration
 
 FA-NIVA can be configured through a combination of command-line parameters and configuration files. Most users only need to adjust the input sample sheet, reference genome settings, and computational resources before running the pipeline.
 
@@ -315,7 +315,7 @@ For a complete list of available parameters and advanced options, see [`nextflow
 
 ---
 
-## 4 Output Structure
+## 4. Output Structure
 
 Results are organized in the specified `--outdir`:
 
