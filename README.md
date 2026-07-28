@@ -8,6 +8,7 @@ FA-NIVA processes Nanopore sequencing data to:
 - Perform high-accuracy basecalling using Dorado with GPU acceleration
 - Align reads to reference genome using pbmm2
 - Call small variants (SNVs/indels) using DeepVariant with GPU support
+- Joint SNV-SV based phasing
 - Annotate structural variants using AnnotSV
 - Generate comprehensive quality control reports with MultiQC
 
@@ -17,26 +18,38 @@ FA-NIVA processes Nanopore sequencing data to:
 
 ```
 FA-NIVA/
-├── bin/                    # Helper scripts (Python, Bash)
-├── conf/                   # Configuration files
-│   ├── base.config        # Base process configuration
-│   ├── modules.config     # Process-specific modules
-│   ├── test.config        # Test profile configuration
-│   └── profile.config     # FA-NIVA specific settings
+├── bin/                   # Python scripts to check samplesheet and modify SNV genotype
+├── conf/                  # Configuration files
+│   ├── base.config        # CPU, memory, and execution time for each process
+│   ├── modules.config     # Process output directories
+│   └── profile.config     # Paths to samplesheet, reference genomes, and Dorado models
 ├── docker_files/          # Docker container definitions
 ├── lib/                   # Groovy utility libraries
 ├── modules/               # Nextflow DSL2 process modules
-│   ├── nf-core/          # nf-core modules
-│   └── local/            # Custom modules
+│   ├── nf-core/           # nf-core modules
+│   └── local/             # Custom modules
 ├── subworkflows/          # Workflow subcomponents
-│   ├── nf-core/          # nf-core subworkflows
-│   └── local/            # Custom subworkflows
-├── workflows/             # Main workflow definitions
-├── assets/                # Templates and reference data
+│   ├── nf-core/           # nf-core subworkflows
+│   └── local/             # Custom subworkflows
+├── workflows/             # Main workflow (fa-niva.nf) definitions
+├── assets/                # Example samplesheet and regions for SNV genotype modification
 ├── main.nf                # Pipeline entry point
 ├── nextflow.config        # Main configuration
 └── nextflow_schema.json   # Parameter schema and validation
 ```
+
+## Files Users Should Update
+
+Before running the pipeline, users should review and modify the following files to match their local environment:
+
+| File | Purpose | What to update |
+|------|---------|----------------|
+| `conf/profile.config` | Environment-specific paths | Update the paths to the samplesheet, reference genomes, Dorado models, and any other local resources. |
+| `conf/base.config` *(optional)* | Resource allocation | Adjust CPU, memory, and execution time for processes according to your computing environment. |
+| `assets/samplesheet.csv` | Input samples | Replace the example samplesheet with your own sample information. |
+| `assets/SNV_modify_regions.csv` *(if applicable)* | Target regions | Update the BED file if using custom genomic regions for SNV genotype modification. |
+
+> **Note:** The pipeline source code (`modules/`, `subworkflows/`, and `workflows/`) typically does not require modification for routine analyses. Most users only need to update the configuration files and input files listed above.
 
 ---
 
