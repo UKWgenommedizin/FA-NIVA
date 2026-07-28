@@ -38,19 +38,6 @@ FA-NIVA/
 └── nextflow_schema.json   # Parameter schema and validation
 ```
 
-## Files Users Should Update
-
-Before running the pipeline, users should review and modify the following files to match their local environment:
-
-| File | Purpose | What to update |
-|------|---------|----------------|
-| `conf/profile.config` | Environment-specific paths | Update the paths to the samplesheet, reference genomes, Dorado models, and any other local resources. |
-| `conf/base.config` *(optional)* | Resource allocation | Adjust CPU, memory, and execution time for processes according to your computing environment. |
-| `assets/samplesheet.csv` | Input samples | Replace the example samplesheet with your own sample information. |
-| `assets/SNV_modify_regions.csv` *(if applicable)* | Target regions | Update the BED file if using custom genomic regions for SNV genotype modification. |
-
-> **Note:** The pipeline source code (`modules/`, `subworkflows/`, and `workflows/`) typically does not require modification for routine analyses. Most users only need to update the configuration files and input files listed above.
-
 ---
 
 ## 📑 Table of Contents
@@ -94,7 +81,7 @@ Before running FA-NIVA, ensure that the following software and resources are ava
 - **Test input data (BAM format)**  
   Example BAM files for testing the pipeline are available on Zenodo:  
   https://zenodo.org/records/17284961  
-  For test purpose, only input_path column in samplesheet.csv shall be adjusted to your local path to the downloaded folder.
+  For test purpose, only input_path column in assets/samplesheet.csv shall be adjusted to your local path to the downloaded folder.
 
 - **Reference genome files**  
   FA-NIVA requires a reference genome compatible with the selected build (e.g., GRCh38).
@@ -114,14 +101,13 @@ If internet access is available, all required reference files (e.g., genome FAST
 ```bash
 nextflow run UKWgenommedizin/FA-NIVA \
   -profile fa_niva,docker \
-  --input samplesheet.csv \
   --genome GRCh38 \
   --outdir results \
   --reads_format bam \
   --use_gpu true
 ```
 
-> **Note:** For test runs using BAM files, the `input_path` in the sample sheet should point to the directory containing the downloaded Zenodo BAM test dataset.
+> **Note:** For test runs using BAM files, the `input_path` in the sample sheet should point to the local directory containing the downloaded Zenodo BAM test dataset.
 
 ---
 
@@ -142,18 +128,15 @@ GRCh38_reference/
 ├── human_GRCh38_no_alt_analysis_set.fasta.fai
 ```
 
-These files must be passed via command-line parameters:
+These files can be passed via command-line parameters:
 
 ```bash
 git clone -b main https://github.com/UKWgenommedizin/FA-NIVA
 nextflow run ./FA-NIVA \ # local path to the downloaded folder from git repo
   -profile fa_niva,docker \
-  --input samplesheet.csv \
-  --genome GRCh38 \
   --fasta /path/to/GRCh38_reference/human_GRCh38_no_alt_analysis_set.fasta \
   --fasta_index /path/to/GRCh38_reference/human_GRCh38_no_alt_analysis_set.fasta.fai \
   --outdir results \
-  --reads_format bam \
   --use_gpu true
 ```
 
@@ -203,7 +186,7 @@ Example command:
 ```bash
 nextflow run ./FA-NIVA \
   -profile FA_NIVA,docker \
-  --input samplesheet_pod5.csv \
+  --input samplesheet_pod5.csv \ # local path to the file if differ from the path defined in conf/profile.config
   --fasta ./ref/GRCh38_GIABv3_no_alt_analysis_set_maskedGRC_decoys_MAP2K3_KMT2C_KCNJ18.fasta \
   --fasta_index ./ref/GRCh38_GIABv3_no_alt_analysis_set_maskedGRC_decoys_MAP2K3_KMT2C_KCNJ18.fasta.fai \
   --outdir results \
@@ -227,7 +210,7 @@ Example command:
 ```bash
 nextflow run ./FA-NIVA \
   -profile FA_NIVA,docker \
-  --input samplesheet_fast5.csv \
+  --input samplesheet_fast5.csv \ # local path to the file if differ from the path defined in conf/profile.config
   --fasta ./ref/GRCh38_GIABv3_no_alt_analysis_set_maskedGRC_decoys_MAP2K3_KMT2C_KCNJ18.fasta \
   --fasta_index ./ref/GRCh38_GIABv3_no_alt_analysis_set_maskedGRC_decoys_MAP2K3_KMT2C_KCNJ18.fasta.fai \
   --outdir results \
@@ -250,7 +233,7 @@ Example command:
 ```bash
 nextflow run ./FA-NIVA \
   -profile FA_NIVA,docker \
-  --input samplesheet_bam.csv \
+  --input samplesheet_bam.csv \ # local path to the file if differ from the path defined in conf/profile.config
   --fasta ./ref/GRCh38_GIABv3_no_alt_analysis_set_maskedGRC_decoys_MAP2K3_KMT2C_KCNJ18.fasta \
   --fasta_index ./ref/GRCh38_GIABv3_no_alt_analysis_set_maskedGRC_decoys_MAP2K3_KMT2C_KCNJ18.fasta.fai \
   --outdir results \
@@ -361,7 +344,7 @@ If you use FA-NIVA in your research, please cite:
 
 ```bibtex
 @article{neurgaonkar2026faniva, 
-  title = {FA-NIVA: A Nextflow framework for automated analysis of Nanopore-based long-read sequencing data for genetic analysis in Fanconi anemia}, 
+  title = {FA-NIVA: A Nextflow framework for automated analysis of Nanopore-based long-read sequencing data for genetic analysis}, 
   author = {Neurgaonkar, Priya Satish and Dierolf, Michelle and O'Gorman, Luke and Remmele, Christian and Schäffer, Judith and Popp, Isabell and Borst, Angela and Rost, Simone and Ankenbrand, Markus J. and Kratz, Christian P. and Bergmann, Anke K. and Kalb, Reinhard and Yu, Jiangyan}, 
   journal = {medRxiv}, 
   year = {2026}, 
