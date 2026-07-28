@@ -76,8 +76,8 @@ for label, (x, y) in nodes.items():
         )
 
 # Add "FA-NIVA" text at coordinates (3, 5)
-ax.text(3.5, 4.5, "FA-NIVA", fontsize=25, ha="center", va="center", color="green", zorder=4)
-ax.text(3.5, 4.2, "Fanconi anemia – Nanopore Indel and Variant Analysis", fontsize=11, ha="center", va="center", color="green", zorder=4)
+ax.text(3.5, 4.9, "FA-NIVA", fontsize=25, ha="center", va="center", color="green", zorder=4)
+ax.text(3.5, 4.6, "Flexible and  Automated – Nextflow-based Integrated Variant Analysis", fontsize=11, ha="center", va="center", color="green", zorder=4)
 
 # Customize plot appearance
 ax.set_xlim(0, 7)

@@ -1,6 +1,6 @@
-# FA-NIVA: Fanconi Anemia Nanopore Analysis
+# FA-NIVA: Flexible and  Automated – Nextflow-based Integrated Variant Analysis
 
-A comprehensive Nextflow pipeline for analyzing long-read Nanopore sequencing data for Fanconi Anemia diagnosis. This pipeline automates basecalling, alignment, variant calling, and structural variant annotation.
+A Nextflow framework for integrated variant analysis of Nanopore-based long-read sequencing data. This pipeline automates basecalling, alignment, variant calling, and structural variant annotation.
 
 ![Description](https://github.com/UKWgenommedizin/FA-NIVA/blob/main/docs/workflow_complete_graph.png)
 
