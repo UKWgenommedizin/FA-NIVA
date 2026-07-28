@@ -1,6 +1,6 @@
-# FA-NIVA: Fanconi Anemia Nanopore Analysis
+# FA-NIVA: Flexible and  Automated – Nextflow-based Integrated Variant Analysis
 
-A comprehensive Nextflow pipeline for analyzing long-read Nanopore sequencing data for Fanconi Anemia diagnosis. This pipeline automates basecalling, alignment, variant calling, and structural variant annotation.
+A Nextflow framework for integrated variant analysis of Nanopore-based long-read sequencing data. This pipeline automates basecalling, alignment, variant calling, and structural variant annotation.
 
 ![Description](https://github.com/UKWgenommedizin/FA-NIVA/blob/main/docs/workflow_complete_graph.png)
 
@@ -8,6 +8,7 @@ FA-NIVA processes Nanopore sequencing data to:
 - Perform high-accuracy basecalling using Dorado with GPU acceleration
 - Align reads to a reference genome using pbmm2
 - Call small variants (SNVs/indels) using DeepVariant with GPU support
+- Joint SNV-SV based phasing
 - Annotate structural variants using AnnotSV
 - Generate comprehensive quality control reports with MultiQC
 
@@ -17,22 +18,21 @@ FA-NIVA processes Nanopore sequencing data to:
 
 ```
 FA-NIVA/
-├── bin/                    # Helper scripts (Python, Bash)
-├── conf/                   # Configuration files
-│   ├── base.config        # Base process configuration
-│   ├── modules.config     # Process-specific modules
-│   ├── test.config        # Test profile configuration
-│   └── profile.config     # FA-NIVA specific settings
+├── bin/                   # Python scripts to check samplesheet and modify SNV genotype
+├── conf/                  # Configuration files
+│   ├── base.config        # CPU, memory, and execution time for each process
+│   ├── modules.config     # Process output directories
+│   └── profile.config     # Paths to samplesheet, reference genomes, and Dorado models
 ├── docker_files/          # Docker container definitions
 ├── lib/                   # Groovy utility libraries
 ├── modules/               # Nextflow DSL2 process modules
-│   ├── nf-core/          # nf-core modules
-│   └── local/            # Custom modules
+│   ├── nf-core/           # nf-core modules
+│   └── local/             # Custom modules
 ├── subworkflows/          # Workflow subcomponents
-│   ├── nf-core/          # nf-core subworkflows
-│   └── local/            # Custom subworkflows
-├── workflows/             # Main workflow definitions
-├── assets/                # Templates and reference data
+│   ├── nf-core/           # nf-core subworkflows
+│   └── local/             # Custom subworkflows
+├── workflows/             # Main workflow (fa-niva.nf) definitions
+├── assets/                # Example samplesheet and regions for SNV genotype modification
 ├── main.nf                # Pipeline entry point
 ├── nextflow.config        # Main configuration
 └── nextflow_schema.json   # Parameter schema and validation
@@ -81,7 +81,7 @@ Before running FA-NIVA, ensure that the following software and resources are ava
 - **Test input data (BAM format)**  
   Example BAM files for testing the pipeline are available on Zenodo:  
   https://zenodo.org/records/17284961  
-  For test purposes, only the `input_path` column in samplesheet.csv needs to be adjusted to your local path to the downloaded folder.
+  For test purpose, only input_path column in assets/samplesheet.csv shall be adjusted to your local path to the downloaded folder.
 
 - **Reference genome files**  
   FA-NIVA requires a reference genome compatible with the selected build (e.g., GRCh38).
@@ -101,14 +101,13 @@ If internet access is available, all required reference files (e.g., genome FAST
 ```bash
 nextflow run UKWgenommedizin/FA-NIVA \
   -profile fa_niva,docker \
-  --input samplesheet.csv \
   --genome GRCh38 \
   --outdir results \
   --reads_format bam \
   --use_gpu true
 ```
 
-> **Note:** For test runs using BAM files, the `input_path` in the sample sheet should point to the directory containing the downloaded Zenodo BAM test dataset.
+> **Note:** For test runs using BAM files, the `input_path` in the sample sheet should point to the local directory containing the downloaded Zenodo BAM test dataset.
 
 ---
 
@@ -129,19 +128,16 @@ GRCh38_reference/
 ├── human_GRCh38_no_alt_analysis_set.fasta.fai
 ```
 
-These files must be passed via command-line parameters:
+These files can be passed via command-line parameters:
 
 ```bash
 # ./FA-NIVA is the local path to the folder cloned from the git repo
 git clone -b main https://github.com/UKWgenommedizin/FA-NIVA
 nextflow run ./FA-NIVA \
   -profile fa_niva,docker \
-  --input samplesheet.csv \
-  --genome GRCh38 \
   --fasta /path/to/GRCh38_reference/human_GRCh38_no_alt_analysis_set.fasta \
   --fasta_index /path/to/GRCh38_reference/human_GRCh38_no_alt_analysis_set.fasta.fai \
   --outdir results \
-  --reads_format bam \
   --use_gpu true
 ```
 
@@ -355,7 +351,7 @@ If you use FA-NIVA in your research, please cite:
 
 ```bibtex
 @article{neurgaonkar2026faniva, 
-  title = {FA-NIVA: A Nextflow framework for automated analysis of Nanopore-based long-read sequencing data for genetic analysis in Fanconi anemia}, 
+  title = {FA-NIVA: A Nextflow framework for automated analysis of Nanopore-based long-read sequencing data for genetic analysis}, 
   author = {Neurgaonkar, Priya Satish and Dierolf, Michelle and O'Gorman, Luke and Remmele, Christian and Schäffer, Judith and Popp, Isabell and Borst, Angela and Rost, Simone and Ankenbrand, Markus J. and Kratz, Christian P. and Bergmann, Anke K. and Kalb, Reinhard and Yu, Jiangyan}, 
   journal = {medRxiv}, 
   year = {2026}, 

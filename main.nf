@@ -36,10 +36,10 @@ WorkflowMain.initialise(workflow, params, log)
 
 include { FANIVA } from './workflows/fa-niva.nf'
 // test the pipeline by using aligned bam file as input. tmp solution
-//include { NANOFANCONI } from './workflows/nano-fanconi1'
+
 
 //
-// WORKFLOW: Run main nf-core_nano-fanconi analysis pipeline
+// WORKFLOW: Run main FA-NIVA analysis pipeline
 //
 workflow {
     FANIVA ()
