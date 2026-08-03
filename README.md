@@ -393,6 +393,22 @@ FA-NIVA uses the **ONT_R104** model for small-variant calling:
 model_type = ONT_R104
 ```
 
+### WhatsHap Configuration
+
+FA-NIVA is benchmarked on diploidy genome. However whatshap itself supports haploid and polyploidy (https://whatshap.readthedocs.io/en/latest/guide.html#whatshap-polyphase). One can edit the modules/local/WHATSHAP_HAPLOTAG.nf accordingly.
+
+```text
+ whatshap polyploid \\
+        --ploidy 3 \\ ## adjust accordingly, 3 as an example here.
+        --tag-supplementary \\
+        --ignore-read-groups \\
+        --output-threads=${task.cpus} \\
+        -o ${meta.id}.${chrom}.haplotagged.cram \\
+        --reference ${fasta} \\
+        ${split_vcf} \\
+        ${split_cram} || true
+```
+
 ## Additional Resources
 
 - [Nextflow Documentation](https://www.nextflow.io/)
