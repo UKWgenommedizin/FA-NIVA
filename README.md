@@ -6,7 +6,7 @@ A Nextflow framework for integrated variant analysis of Nanopore-based long-read
 
 FA-NIVA processes Nanopore sequencing data to:
 - Perform high-accuracy basecalling using Dorado with GPU acceleration
-- Align reads to reference genome using pbmm2
+- Align reads to a reference genome using pbmm2
 - Call small variants (SNVs/indels) using DeepVariant with GPU support
 - Joint SNV-SV based phasing
 - Annotate structural variants using AnnotSV
@@ -118,7 +118,7 @@ If external downloads are restricted, all reference genome files must be provide
 Reference genomes can be obtained from:  
 https://github.com/PacificBiosciences/reference_genomes
 
-For the GRCh38, one can download bundle for human_GRCh38_no_alt_analysis_set
+For GRCh38, one can download the bundle for human_GRCh38_no_alt_analysis_set
 
 Required files:
 
@@ -131,8 +131,9 @@ GRCh38_reference/
 These files can be passed via command-line parameters:
 
 ```bash
+# ./FA-NIVA is the local path to the folder cloned from the git repo
 git clone -b main https://github.com/UKWgenommedizin/FA-NIVA
-nextflow run ./FA-NIVA \ # local path to the downloaded folder from git repo
+nextflow run ./FA-NIVA \
   -profile fa_niva,docker \
   --fasta /path/to/GRCh38_reference/human_GRCh38_no_alt_analysis_set.fasta \
   --fasta_index /path/to/GRCh38_reference/human_GRCh38_no_alt_analysis_set.fasta.fai \
@@ -144,7 +145,7 @@ For cluster-specific settings, resource allocation, and custom configurations, s
 
 ---
 
-## 2 Input Data
+## 2. Input Data
 
 ### 2.1 Samplesheet Format
 
@@ -170,11 +171,11 @@ FA-NIVA supports three starting points:
 | FASTQ      | Alignment            | Basecalled FASTQ files (`*.fastq.gz`)                                  | Fully tested      |
 | BAM*       | Variant Calling      | Coordinate-sorted BAM file (`*.bam`) and corresponding index (`*.bai`) | Fully tested      |
 
-*When input is bam file, dorado basecalling step will be skipped.
+*When input is a bam file, the dorado basecalling step will be skipped.
 
 #### 2.2.1 Using POD5 files
 
-prepare samplesheet_pod5.csv
+Prepare samplesheet_pod5.csv
 
 ```csv
 id,sample,flowcell,input_path,batch,kit
@@ -185,20 +186,22 @@ Example command:
 
 ```bash
 nextflow run ./FA-NIVA \
-  -profile FA_NIVA,docker \
-  --input samplesheet_pod5.csv \ # local path to the file if differ from the path defined in conf/profile.config
+  -profile fa_niva,docker \
+  --input samplesheet_pod5.csv \
   --fasta ./ref/GRCh38_GIABv3_no_alt_analysis_set_maskedGRC_decoys_MAP2K3_KMT2C_KCNJ18.fasta \
   --fasta_index ./ref/GRCh38_GIABv3_no_alt_analysis_set_maskedGRC_decoys_MAP2K3_KMT2C_KCNJ18.fasta.fai \
   --outdir results \
-  --dorado_model dna_r10.4.1_e8.2_400bps_fast@v5.0.0 \ # important to use the corresponding dorado_model for basecalling
+  --dorado_model dna_r10.4.1_e8.2_400bps_fast@v5.0.0 \
   --reads_format pod5 \
   --use_gpu true
 ```
 
+> **Note:** `--dorado_model` must match the model used for basecalling.
+
 
 #### 2.2.2 Using FAST5 files
 
-prepare samplesheet_fast5.csv
+Prepare samplesheet_fast5.csv
 
 ```csv
 id,sample,flowcell,input_path,batch,kit
@@ -209,19 +212,21 @@ Example command:
 
 ```bash
 nextflow run ./FA-NIVA \
-  -profile FA_NIVA,docker \
-  --input samplesheet_fast5.csv \ # local path to the file if differ from the path defined in conf/profile.config
+  -profile fa_niva,docker \
+  --input samplesheet_fast5.csv \
   --fasta ./ref/GRCh38_GIABv3_no_alt_analysis_set_maskedGRC_decoys_MAP2K3_KMT2C_KCNJ18.fasta \
   --fasta_index ./ref/GRCh38_GIABv3_no_alt_analysis_set_maskedGRC_decoys_MAP2K3_KMT2C_KCNJ18.fasta.fai \
   --outdir results \
-  --dorado_model dna_r10.4.1_e8.2_400bps_fast@v5.0.0 \ # important to use the corresponding dorado_model for basecalling
+  --dorado_model dna_r10.4.1_e8.2_400bps_fast@v5.0.0 \
   --reads_format fast5 \
   --use_gpu true
 ```
 
+> **Note:** `--dorado_model` must match the model used for basecalling.
+
 #### 2.2.3 Using BAM files
 
-prepare samplesheet_bam.csv
+Prepare samplesheet_bam.csv
 
 ```csv
 id,sample,flowcell,input_path,batch,kit
@@ -232,14 +237,16 @@ Example command:
 
 ```bash
 nextflow run ./FA-NIVA \
-  -profile FA_NIVA,docker \
-  --input samplesheet_bam.csv \ # local path to the file if differ from the path defined in conf/profile.config
+  -profile fa_niva,docker \
+  --input samplesheet_bam.csv \
   --fasta ./ref/GRCh38_GIABv3_no_alt_analysis_set_maskedGRC_decoys_MAP2K3_KMT2C_KCNJ18.fasta \
   --fasta_index ./ref/GRCh38_GIABv3_no_alt_analysis_set_maskedGRC_decoys_MAP2K3_KMT2C_KCNJ18.fasta.fai \
   --outdir results \
-  --reads_format bam \ # dorado basecalling step will be skipped
+  --reads_format bam \
   --use_gpu true
 ```
+
+> **Note:** when the input is BAM, the dorado basecalling step is skipped.
 
 #### Barcoded Datasets 
 The default FA-NIVA workflow is configured for single-sample analysis and does not perform barcode demultiplexing. For datasets containing multiple barcoded samples, users should perform barcode demultiplexing during the basecalling step using Dorado's native barcode support. Barcode demultiplexing can be enabled by modifying the Dorado command in: `modules/local/DORADO_BASECALLER.nf` and adding the appropriate Dorado barcode-related parameters (e.g., barcode kit specification and demultiplexing options) according to the Dorado documentation. 
@@ -248,7 +255,7 @@ FA-NIVA does not automatically detect or process multiplexed datasets. If barcod
 
 ---
 
-## 3 Configuration
+## 3. Configuration
 
 FA-NIVA can be configured through a combination of command-line parameters and configuration files. Most users only need to adjust the input sample sheet, reference genome settings, and computational resources before running the pipeline.
 
@@ -304,7 +311,7 @@ For a complete list of available parameters and advanced options, see [`nextflow
 
 ---
 
-## 4 Output Structure
+## 4. Output Structure
 
 Results are organized in the specified `--outdir`:
 
