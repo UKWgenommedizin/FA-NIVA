@@ -376,21 +376,8 @@ This project is licensed under the [MIT License](LICENSE).
 
 ## Notes and Implementation Details
 
-### AnnotSV Installation
-
-The current AnnotSV container image does not include the annotation database (`annotationsDir`). Therefore, the annotation database must be installed separately before running structural variant annotation.
-
-Install the AnnotSV annotation resources according to the official instructions:
-
-https://github.com/lgmgeo/AnnotSV/blob/master/bin/INSTALL_annotations.sh
-
-After installation, update the corresponding annotation database path in:
-
-```text
-conf/profile.config
-```
-
-and enable AnnotSV annotation as described in the Configuration section.
+### pbmm2 Configuration
+pmbb2 does not support default bam file from dorado basecalling. To address this, FA-NIVA automatically converts basecalled BAM files to FASTQ format prior to alignment, ensuring compatibility with pbmm2 without requiring any user intervention. Although conversion from basecalled BAM to FASTQ removes auxiliary BAM tags, the sequence and base-quality information required for downstream alignment and variant calling are preserved. 
 
 ### DeepVariant Configuration
 
@@ -415,6 +402,22 @@ FA-NIVA is benchmarked on diploidy genome. However whatshap itself supports hapl
         ${split_vcf} \\
         ${split_cram} || true
 ```
+
+### AnnotSV Installation
+
+The current AnnotSV container image does not include the annotation database (`annotationsDir`). Therefore, the annotation database must be installed separately before running structural variant annotation.
+
+Install the AnnotSV annotation resources according to the official instructions:
+
+https://github.com/lgmgeo/AnnotSV/blob/master/bin/INSTALL_annotations.sh
+
+After installation, update the corresponding annotation database path in:
+
+```text
+conf/profile.config
+```
+
+and enable AnnotSV annotation as described in the Configuration section.
 
 ## Additional Resources
 
