@@ -405,7 +405,7 @@ model_type = ONT_R104
 FA-NIVA is benchmarked on diploidy genome. However whatshap itself supports haploid and polyploidy (https://whatshap.readthedocs.io/en/latest/guide.html#whatshap-polyphase). One can edit the modules/local/WHATSHAP_HAPLOTAG.nf accordingly.
 
 ```text
- whatshap polyploid \\
+ whatshap polyphase \\
         --ploidy 3 \\ ## adjust accordingly, 3 as an example here.
         --tag-supplementary \\
         --ignore-read-groups \\
