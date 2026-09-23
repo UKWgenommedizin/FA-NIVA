@@ -8,6 +8,7 @@ FA-NIVA processes Nanopore sequencing data to:
 - Perform high-accuracy basecalling using Dorado with GPU acceleration
 - Align reads to a reference genome using pbmm2
 - Call small variants (SNVs/indels) using DeepVariant with GPU support
+- Call structure variants using sawfish
 - Joint SNV-SV based phasing
 - Annotate structural variants using AnnotSV
 - Generate comprehensive quality control reports with MultiQC

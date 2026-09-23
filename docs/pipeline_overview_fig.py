@@ -85,5 +85,5 @@ ax.set_ylim(0, 5)
 ax.axis("off")  # Hide axes
 
 # Save and show the figure
-plt.savefig("workflow_complete_graph.png", dpi=300)
+plt.savefig("./docs/workflow_complete_graph.png", dpi=300)
 plt.show()
