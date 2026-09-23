@@ -149,7 +149,7 @@ For cluster-specific settings, resource allocation, and custom configurations, s
 
 ### 2.1 Samplesheet Format
 
-Create a CSV file (`samplesheet.csv`) with the following columns. The input_path column should contain the path to the directory holding the input data files (e.g., POD5, FAST5, FASTQ, or BAM files) for each sample.
+Create a CSV file (`samplesheet.csv`) with the following columns. The input_path column should contain the path to the directory holding the input data files (e.g., POD5, FAST5, or BAM files) for each sample.
 
 To ensure compatibility across operating systems, we recommend copying and modifying the template file located at [`assets/samplesheet.csv`](assets/samplesheet.csv). When preparing the sample sheet on Linux-based HPC systems, editing the file with vim or another Unix-compatible text editor can help avoid issues related to Windows line endings and file formatting.
 
@@ -168,7 +168,6 @@ FA-NIVA supports three starting points:
 | ---------- | -------------------- | ---------------------------------------------------------------------- | ----------------- |
 | POD5       | Basecalling          | Nanopore POD5 files (`*.pod5`)                                         | Fully tested      |
 | FAST5      | Basecalling          | Nanopore FAST5 files (`*.fast5`)                                       | Fully tested      |
-| FASTQ      | Alignment            | Basecalled FASTQ files (`*.fastq.gz`)                                  | Fully tested      |
 | BAM*       | Variant Calling      | Coordinate-sorted BAM file (`*.bam`) and corresponding index (`*.bai`) | Fully tested      |
 
 *When input is a bam file, the dorado basecalling step will be skipped.
@@ -278,7 +277,7 @@ The following files may require modification depending on the computing environm
 
 | File | Description |
 |------|-------------|
-| `assets/samplesheet.csv` | Defines the input samples. The `input_path` field should contain the absolute path to the directory containing the input sequencing files (`*.pod5`, `*.fast5`, `*.fastq.gz`, or `*.bam`). |
+| `assets/samplesheet.csv` | Defines the input samples. The `input_path` field should contain the absolute path to the directory containing the input sequencing files (`*.pod5`, `*.fast5`, or `*.bam`). |
 | `conf/profile.config` | Defines reference genome resources, Dorado model settings, and AnnotSV database locations. Reference paths can also be supplied using `--fasta` and `--fasta_index`. |
 | `conf/base.config` | Specifies computational resources such as CPU, memory, and GPU allocation. |
 | `nextflow.config` | Controls workflow components and software modules. Structural variant annotation is disabled by default and must be enabled if AnnotSV analysis is required. |
@@ -376,20 +375,23 @@ This project is licensed under the [MIT License](LICENSE).
 
 ## Notes and Implementation Details
 
+### Dorado chemistry
+FA-NIVA has been validated on R10.4.1 data basecalled with the Dorado super-accuracy models v4.1.0 and v5.0.0. Thus we cannot exclude reduced alignment performance for lower-accuracy reads (e.g. older chemistries or fast basecalling models). 
+
 ### pbmm2 Configuration
-pmbb2 does not support default bam file from dorado basecalling. To address this, FA-NIVA automatically converts basecalled BAM files to FASTQ format prior to alignment, ensuring compatibility with pbmm2 without requiring any user intervention. Although conversion from basecalled BAM to FASTQ removes auxiliary BAM tags, the sequence and base-quality information required for downstream alignment and variant calling are preserved. 
+pbmm2 does not support default bam file from dorado basecalling. To address this, FA-NIVA automatically converts basecalled BAM files to FASTQ format prior to alignment, ensuring compatibility with pbmm2 without requiring any user intervention. Although conversion from basecalled BAM to FASTQ removes auxiliary BAM tags, the sequence and base-quality information required for downstream alignment and variant calling are preserved. 
 
 ### DeepVariant Configuration
 
 FA-NIVA uses the **ONT_R104** model for small-variant calling:
 
 ```text
-model_type = ONT_R104
+model_type = ONT_R104 ## if pacbio data, change it to PACBIO
 ```
 
 ### WhatsHap Configuration
 
-FA-NIVA is benchmarked on diploidy genome. However whatshap itself supports haploid and polyploidy (https://whatshap.readthedocs.io/en/latest/guide.html#whatshap-polyphase). One can edit the modules/local/WHATSHAP_HAPLOTAG.nf accordingly.
+FA-NIVA is benchmarked on diploid genome. However whatshap itself supports haploid and polyploidy (https://whatshap.readthedocs.io/en/latest/guide.html#whatshap-polyphase). One can edit the modules/local/WHATSHAP_HAPLOTAG.nf accordingly.
 
 ```text
  whatshap polyphase \\
