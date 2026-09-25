@@ -5,7 +5,7 @@ A Nextflow framework for integrated variant analysis of Nanopore-based long-read
 ![Description](https://github.com/UKWgenommedizin/FA-NIVA/blob/main/docs/workflow_complete_graph.png)
 
 FA-NIVA processes Nanopore sequencing data to:
-- Perform high-accuracy basecalling using Dorado with GPU acceleration
+- Perform super-accuracy basecalling using Dorado with GPU acceleration
 - Align reads to a reference genome using pbmm2
 - Call small variants (SNVs/indels) using DeepVariant with GPU support
 - Call structure variants using sawfish
@@ -395,7 +395,7 @@ model_type = ONT_R104 ## if pacbio data, change it to PACBIO
 
 ### WhatsHap Configuration
 
-FA-NIVA is benchmarked on diploid genome. However whatshap itself supports haploid and polyploidy (https://whatshap.readthedocs.io/en/latest/guide.html#whatshap-polyphase). One can edit the modules/local/WHATSHAP_HAPLOTAG.nf accordingly.
+FA-NIVA is benchmarked on diploid genome. However whatshap itself supports polyploidy (https://whatshap.readthedocs.io/en/latest/guide.html#whatshap-polyphase). One can edit the modules/local/WHATSHAP_HAPLOTAG.nf accordingly.
 
 ```text
  whatshap polyphase \\
@@ -430,6 +430,11 @@ and enable AnnotSV annotation as described in the Configuration section.
 - [Nextflow Documentation](https://www.nextflow.io/)
 - [nf-core Community](https://nf-co.re/)
 - [Dorado Basecaller](https://github.com/nanoporetech/dorado)
+- [pbmm2](https://github.com/PacificBiosciences/pbmm2)
+- [sawfish](https://github.com/PacificBiosciences/sawfish)
+- [WhatsHap](https://github.com/whatshap/whatshap)
+- [pycoQC](https://github.com/a-slide/pycoQC)
+- [MultiQC](https://github.com/multiqc/multiqc)
 - [DeepVariant](https://github.com/google/deepvariant)
 - [AnnotSV](https://lbgi.fr/AnnotSV/)
 
