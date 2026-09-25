@@ -382,6 +382,9 @@ FA-NIVA has been validated on R10.4.1 data basecalled with the Dorado super-accu
 ### sequencing depth
 Regarding sequencing depth, there is no minimum depth requirement to run the pipeline itself. FA-NIVA can process datasets with very low coverage, and we have successfully tested the workflow using a small dataset generated from only three POD5 files to reduce runtime during development and validation. However, while the pipeline will execute successfully at low sequencing depths, insufficient coverage may limit variant detection sensitivity and could result in few or no variants being identified during downstream analyses. To avoid these issues, we recommend a minimum coverage of 10x.
 
+### benchmarking aligners and variant callers
+Scripts to benchmark aligners and variant callers can be found here: https://github.com/UKWgenommedizin/lrs_benchmarking
+
 ### pbmm2 Configuration
 pbmm2 does not support default bam file from dorado basecalling. To address this, FA-NIVA automatically converts basecalled BAM files to FASTQ format prior to alignment, ensuring compatibility with pbmm2 without requiring any user intervention. Although conversion from basecalled BAM to FASTQ removes auxiliary BAM tags, the sequence and base-quality information required for downstream alignment and variant calling are preserved. 
 
