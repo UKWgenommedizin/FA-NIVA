@@ -1,4 +1,6 @@
-# FA-NIVA: Flexible and  Automated – Nextflow-based Integrated Variant Analysis
+| | |
+| :--- | :--- |
+| **FA-NIVA** (Flexible and Automated – Nextflow-based Integrated Variant Analysis) streamlines robust genomic workflows. | [![FA-NIVA Logo](https://github.com/UKWgenommedizin/FA-NIVA/raw/main/docs/FA-NIVA_Logo.png)](https://github.com/UKWgenommedizin/FA-NIVA/blob/main/docs/FA-NIVA_Logo.pdf) |
 
 A Nextflow framework for integrated variant analysis of Nanopore-based long-read sequencing data. This pipeline automates basecalling, alignment, variant calling, and structural variant annotation.
 
