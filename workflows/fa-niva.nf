@@ -302,9 +302,11 @@ workflow FANIVA {
         }
         .set { ch_unmapped_bams } // set channel name
 
-        // Summarize metrics retained in PacBio HiFi BAM records. CCS failure
-        // categories are unavailable without the CCS report or original subreads.
-        PACBIO_BAM_SUMMARY(ch_unmapped_bams)
+        if (params.bam_platform == 'pacbio') {
+            // Summarize metrics retained in PacBio HiFi BAM records. CCS failure
+            // categories are unavailable without the CCS report or original subreads.
+            PACBIO_BAM_SUMMARY(ch_unmapped_bams)
+        }
 
     }
 
@@ -677,7 +679,7 @@ workflow FANIVA {
     if (params.reads_format == 'fast5' || params.reads_format == 'pod5') {
         ch_multiqc_files = ch_multiqc_files.mix(PYCOQC.out.json.collect{it[1]}.ifEmpty([]))
     }
-    if (params.reads_format == 'bam') {
+    if (params.reads_format == 'bam' && params.bam_platform == 'pacbio') {
         ch_multiqc_files = ch_multiqc_files.mix(PACBIO_BAM_SUMMARY.out.multiqc.collect{it[1]}.ifEmpty([]))
     }
 

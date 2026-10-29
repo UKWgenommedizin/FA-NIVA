@@ -21,6 +21,7 @@ Set of configurable parameters that determine the operational sequence and behav
 | `max_memory` | Maximum memory (RAM) allowed for any process. Set via CLI as `--max_memory`. | `string` | 256.GB | False |
 | `max_time` | Maximum allowed runtime for any process. Set via CLI as `--max_time`. | `string` | 256.h | False |
 | `reads_format` | Specifies the input file format for the sequencing reads <details><summary>Help</summary><small><br>This option determines the starting point and processing steps of the pipeline based on the provided file format. Supported formats are `fast5`, `pod5`, and `bam`.<br>- `fast5`: When this format is selected, the pipeline initiates by converting `fast5` files to `pod5` files, followed by basecalling.<br>- `pod5`: Selecting this format starts the pipeline directly with Dorado basecalling, skipping any format conversion steps.<br>- `bam`: If `bam` format is chosen, the pipeline omits the basecalling stage and begins with read alignment, as `bam` files are assumed to be already basecalled.<br>- This option is crucial for directing the pipeline to correctly interpret the input data and apply the appropriate processing steps.<br></small></details>| `string` | bam | True |
+| `bam_platform` | Sequencing platform for BAM input. Use `pacbio` to enable the PacBio BAM summary and DeepVariant PACBIO model; use `ont` for Oxford Nanopore BAMs. | `string` | ont | False |
 
 
 ## Reference genome options

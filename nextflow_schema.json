@@ -55,6 +55,13 @@
           "enum": ["fast5", "pod5", "bam"],
           "help_text": "\nThis option determines the starting point and processing steps of the pipeline based on the provided file format. Supported formats are `fast5`, `pod5`, and `bam`.\n- `fast5`: When this format is selected, the pipeline initiates by converting `fast5` files to `pod5` files, followed by basecalling.\n- `pod5`: Selecting this format starts the pipeline directly with Dorado basecalling, skipping any format conversion steps.\n- `bam`: If `bam` format is chosen, the pipeline omits the basecalling stage and begins with read alignment, as `bam` files are assumed to be already basecalled.\n- This option is crucial for directing the pipeline to correctly interpret the input data and apply the appropriate processing steps.\n"
         },
+        "bam_platform": {
+          "type": "string",
+          "default": "ont",
+          "enum": ["ont", "pacbio"],
+          "description": "Sequencing platform for BAM input",
+          "help_text": "Set to `pacbio` for PacBio HiFi BAM input or `ont` for Oxford Nanopore BAM input. PacBio BAM input enables the PacBio BAM summary and selects the DeepVariant PACBIO model."
+        },
         "extract_methylation": {
           "type": "boolean",
           "description": "Determines whether to extract methylation BED files from BAM files",

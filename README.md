@@ -108,6 +108,7 @@ nextflow run UKWgenommedizin/FA-NIVA \
   --genome GRCh38 \
   --outdir results \
   --reads_format bam \
+  --bam_platform pacbio \
   --use_gpu true
 ```
 
@@ -274,6 +275,7 @@ FA-NIVA can be configured through a combination of command-line parameters and c
 | `--use_gpu` | Enable GPU acceleration for Dorado basecalling and DeepVariant variant calling. Optional if configured in `conf/profile.config`. |
 | `--dorado_model` | Important to use the corresponding dorado_model for basecalling. Will be skipped if input is bam. Optional if configured in `conf/profile.config`. |
 | `--reads_format` | Optional if configured in `conf/profile.config`.  |
+| `--bam_platform` | Platform for BAM input: `ont` (default) or `pacbio`. PacBio enables the BAM summary and selects DeepVariant's `PACBIO` model. |
 
 ### 3.2 Configuration Files
 
@@ -393,10 +395,10 @@ pbmm2 does not support default bam file from dorado basecalling. To address this
 
 ### DeepVariant Configuration
 
-FA-NIVA uses the **ONT_R104** model for small-variant calling:
+FA-NIVA uses the **ONT_R104** model for ONT data and the **PACBIO** model when PacBio BAM input is selected with `--bam_platform pacbio`:
 
 ```text
-model_type = ONT_R104 ## if pacbio data, change it to PACBIO
+model_type = ONT_R104 (ONT) or PACBIO (PacBio)
 ```
 
 ### WhatsHap Configuration

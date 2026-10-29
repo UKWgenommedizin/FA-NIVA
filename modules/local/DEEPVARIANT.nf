@@ -3,6 +3,7 @@ def determineLabel() {
     return params.use_gpu ? 'process_gpu_long' : 'process_high'
 }
 def processLabel = determineLabel()
+def deepvariantModel = params.reads_format == 'bam' && params.bam_platform == 'pacbio' ? 'PACBIO' : 'ONT_R104'
 
 process DEEPVARIANT {
     tag "$meta.id"
@@ -51,7 +52,7 @@ process DEEPVARIANT {
 
         /opt/deepvariant/bin/run_deepvariant \\
             --num_shards=${task.cpus} \\
-            --model_type=ONT_R104 \\
+            --model_type=${deepvariantModel} \\
             --disable_small_model \\
             --postprocess_variants_extra_args='only_keep_pass=true' \\
             --ref=${fasta} \\
