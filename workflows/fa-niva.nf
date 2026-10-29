@@ -59,6 +59,7 @@ include { FAST5_TO_POD5                                        } from '../module
 include { DORADO_BASECALLER                                    } from '../modules/local/DORADO_BASECALLER.nf'
 include { DORADO_BASECALL_SUMMARY                              } from '../modules/local/DORADO_BASECALL_SUMMARY.nf'
 include { PYCOQC                                               } from '../modules/local/PYCOQC.nf'
+include { PACBIO_BAM_SUMMARY                                   } from '../modules/local/PACBIO_BAM_SUMMARY.nf'
 include { PBMM2_FROM_BAM                                       } from '../modules/local/PBMM2_FROM_BAM.nf'
 include { EXTRACT_LOW_MG_FROM_CRAM                             } from '../modules/local/EXTRACT_LOW_MG_FROM_CRAM.nf'
 include { SPLIT_CRAM_BY_CHROM                                  } from '../modules/local/SPLIT_CRAM_BY_CHROM.nf'
@@ -300,6 +301,10 @@ workflow FANIVA {
             [meta, unique_files]
         }
         .set { ch_unmapped_bams } // set channel name
+
+        // Summarize metrics retained in PacBio HiFi BAM records. CCS failure
+        // categories are unavailable without the CCS report or original subreads.
+        PACBIO_BAM_SUMMARY(ch_unmapped_bams)
 
     }
 
@@ -671,6 +676,9 @@ workflow FANIVA {
 
     if (params.reads_format == 'fast5' || params.reads_format == 'pod5') {
         ch_multiqc_files = ch_multiqc_files.mix(PYCOQC.out.json.collect{it[1]}.ifEmpty([]))
+    }
+    if (params.reads_format == 'bam') {
+        ch_multiqc_files = ch_multiqc_files.mix(PACBIO_BAM_SUMMARY.out.multiqc.collect{it[1]}.ifEmpty([]))
     }
 
 
