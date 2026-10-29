@@ -5,7 +5,7 @@
 | Welcome to the official repository for **FA-NIVA**, a Nextflow framework for integrated variant analysis of Nanopore-based long-read sequencing data. This pipeline automates basecalling, alignment, variant calling, and structural variant annotation. | <a href="docs/FA-NIVA_Logo.pdf"><img src="docs/FA-NIVA_Logo.png" width="220" alt="FA-NIVA Logo"></a> |
 
 
-![Description](https://github.com/UKWgenommedizin/FA-NIVA/blob/main/docs/fa-niva.png)
+![FA-NIVA workflow overview](docs/fa-niva.png)
 
 FA-NIVA processes Nanopore sequencing data to:
 - Perform super-accuracy basecalling using Dorado with GPU acceleration

@@ -7,44 +7,50 @@
 \begin{tikzpicture}[
     >=Stealth,
     node/.style={draw=green!50!black, text=black, thick, minimum width=2.2cm, minimum height=1cm, font=\Large, align=center},
-    lbl/.style={text=black, font=\Large, align=center},
+    lbl/.style={text=black, font=\large, align=center},
     arr/.style={-{Stealth[length=3mm]}, green!50!black, thick},
-    circ/.style={draw=green!50!black, fill=gray!20, thick, circle, inner sep=1pt}
+    inputbox/.style={draw=green!50!black, fill=gray!20, thick, rectangle, inner sep=7pt}
 ]
 
 % ---------- Nodes ----------
 \node[node] (dorado)      at (0,6)    {dorado};
 \node[node] (pycoqc)      at (0,4.2)  {pycoQC};
-\node[node] (pbmm2)       at (3,4.2)  {pbmm2};
-\node[node] (sawfish)     at (6,6)    {sawfish};
-\node[node] (deepvariant) at (6,2.4)  {DeepVariant};
-\node[node] (annotsv)     at (9,4.2)  {AnnotSV};
-\node[node] (whatshap)    at (12,4.2) {WhatsHap};
+\node[node] (multiqc)     at (0,2.4)  {MultiQC};
+\node[node] (pbmm2)       at (6.5,4.2)  {pbmm2};
+\node[node] (sawfish)     at (9.5,6)    {sawfish};
+\node[node] (deepvariant) at (9.5,2.4)  {DeepVariant};
+\node[node] (annotsv)     at (12.5,4.2)  {AnnotSV};
+\node[node] (whatshap)    at (15.5,4.2) {WhatsHap};
 
 % ---------- Input labels (circled) ----------
-\node[lbl] (pod5) at (-2.6,7.6) {.pod5};
-\node[lbl] (fast5) at (-0.2,8.2) {.fast5};
-\node[lbl] (bam)  at (3,7.3) {.bam};
+\node[lbl] (pod5) at (-1.6,8) {ONT\\.pod5};
+\node[lbl] (fast5) at (1.5,8) {ONT\\.fast5};
+\node[lbl] (pacbio_bam) at (3,1.1) {PacBio\\.bam};
+\node[lbl] (ont_bam) at (6.5,1.1) {ONT\\.bam};
 
 \begin{scope}[on background layer]
-\node[circ, fit=(pod5), inner sep=5pt] (pod5circ) {};
-\node[circ, fit=(fast5), inner sep=5pt] (fast5circ) {};
-\node[circ, fit=(bam), inner sep=5pt] (bamcirc) {};
+\node[inputbox, fit=(pod5)] (pod5box) {};
+\node[inputbox, fit=(fast5)] (fast5box) {};
+\node[inputbox, fit=(pacbio_bam)] (pacbiobambox) {};
+\node[inputbox, fit=(ont_bam)] (ontbambox) {};
 \end{scope}
 
 % ---------- Title (centered over whole diagram) ----------
-\node[green!50!black, font=\Huge] at (4.7,11) {FA-NIVA};
-\node[green!50!black, font=\large] at (4.7,10.15)
+\node[green!50!black, font=\Huge] at (5.5,11) {FA-NIVA};
+\node[green!50!black, font=\large] at (5.5,10.15)
     {Flexible and Automated -- Nextflow-based Integrated Variant Analysis};
 
 % ---------- Arrows from inputs (start at circle border) ----------
-\draw[arr] (pod5circ.south east) -- (dorado.north west);
-\draw[arr] (fast5circ.south) -- (dorado.north);
-\draw[arr] (bamcirc.south) -- (pbmm2.north);
+\draw[arr] (pod5box.south east) -- (dorado.north west);
+\draw[arr] (fast5box.south) -- (dorado.north);
+\draw[arr] (pacbiobambox.north west) -- (multiqc.south east);
+\draw[arr] (pacbiobambox.north east) -- (pbmm2.south west);
+\draw[arr] (ontbambox.north) -- (pbmm2.south);
 
 % ---------- Main flow ----------
 \draw[arr] (dorado) -- (pycoqc);
-\draw[arr] (pycoqc) -- (pbmm2);
+\draw[arr] (pycoqc) -- (multiqc);
+\draw[arr] (dorado.east) -| (pbmm2.north);
 
 \draw[arr] (pbmm2) -- (sawfish);
 \draw[arr] (pbmm2) -- (deepvariant);
