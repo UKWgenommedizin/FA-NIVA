@@ -2,8 +2,8 @@ process DORADO_BASECALL_SUMMARY {
     label 'process_high'
 
     container "${ workflow.containerEngine == 'singularity' && !task.ext.singularity_pull_docker_container ?
-        'jiangyanyu/docker-dorado:v241016' :
-        'jiangyanyu/docker-dorado:v241016' }"
+        'jiangyanyu/docker-dorado:v2.1.1' :
+        'jiangyanyu/docker-dorado:v2.1.1' }"
 
     input:
 

@@ -1,4 +1,4 @@
-FROM nanoporetech/dorado:sha8bc19cc3c78c1ce847fbf4a879cad997b7e8c430
+FROM ontresearch/dorado:sha9809639e07a927bcc0f584dadd5e59674cf59f3f
 LABEL description="Image with dorado and all models"
 USER root
 # Install essential packages
