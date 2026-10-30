@@ -74,7 +74,7 @@ def main(input_dir):
         payload = {
             "id": "samtools_flagstat_generalstats",
             "plot_type": "generalstats",
-            "headers": HEADERS,
+            "pconfig": HEADERS,
             "data": {sample: values},
         }
         output_path.write_text(json.dumps(payload))
