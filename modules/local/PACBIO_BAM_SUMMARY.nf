@@ -10,6 +10,7 @@ process PACBIO_BAM_SUMMARY {
     output:
         tuple val(meta), path("${meta.id}.pacbio_summary.tsv"), emit: summary
         tuple val(meta), path("${meta.id}_pacbio_mqc.tsv"), emit: multiqc
+        tuple val(meta), path("${meta.id}_pacbio_generalstats_mqc.json"), emit: generalstats
 
     script:
     """

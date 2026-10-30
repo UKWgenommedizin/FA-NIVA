@@ -17,6 +17,8 @@ process PBMM2_FROM_BAM {
         // tuple val(meta), path ("*.cram"), emit: cram
         // tuple val(meta), path ("*.cram.crai"), emit: crai
         tuple val(meta), path ("${meta.id}.cram"), path ("${meta.id}.cram.crai"), emit: cram_crai
+        tuple val(meta), path ("${meta.id}.samtools.stats"), emit: stats
+        tuple val(meta), path ("${meta.id}.flagstat"), emit: flagstat
         path "versions.yml", emit: versions
 
     script:
@@ -38,6 +40,9 @@ process PBMM2_FROM_BAM {
         samtools sort -@ ${task.cpus} --reference ${fasta} -O cram -o ${meta.id}.cram
 
         samtools index -@ ${task.cpus} ${meta.id}.cram
+
+        samtools stats --reference ${fasta} ${meta.id}.cram > ${meta.id}.samtools.stats
+        samtools flagstat -@ ${task.cpus} ${meta.id}.cram > ${meta.id}.flagstat
 
         rm ${meta.id}.fastq.gz
 

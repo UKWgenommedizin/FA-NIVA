@@ -681,6 +681,7 @@ workflow FANIVA {
     }
     if (params.reads_format == 'bam' && params.bam_platform == 'pacbio') {
         ch_multiqc_files = ch_multiqc_files.mix(PACBIO_BAM_SUMMARY.out.multiqc.collect{it[1]}.ifEmpty([]))
+        ch_multiqc_files = ch_multiqc_files.mix(PACBIO_BAM_SUMMARY.out.generalstats.collect{it[1]}.ifEmpty([]))
     }
 
 
@@ -691,6 +692,8 @@ workflow FANIVA {
     ch_multiqc_files = ch_multiqc_files.mix(MOSDEPTH.out.regions_csi.collect{it[1]}.ifEmpty([]))
     ch_multiqc_files = ch_multiqc_files.mix(MOSDEPTH.out.quantized_bed.collect{it[1]}.ifEmpty([]))
     ch_multiqc_files = ch_multiqc_files.mix(MOSDEPTH.out.quantized_csi.collect{it[1]}.ifEmpty([]))
+    ch_multiqc_files = ch_multiqc_files.mix(PBMM2_FROM_BAM.out.stats.collect{it[1]}.ifEmpty([]))
+    ch_multiqc_files = ch_multiqc_files.mix(PBMM2_FROM_BAM.out.flagstat.collect{it[1]}.ifEmpty([]))
 
 
     MULTIQC (

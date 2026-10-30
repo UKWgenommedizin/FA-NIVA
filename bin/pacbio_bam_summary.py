@@ -3,6 +3,7 @@
 
 import math
 import csv
+import json
 import statistics
 import sys
 
@@ -143,3 +144,59 @@ with open(mqc_path, "w", newline="") as handle:
     table_writer = csv.writer(handle, delimiter="\t", lineterminator="\n")
     table_writer.writerow(["Sample"] + [name for name, _, _ in report_rows])
     table_writer.writerow([sample] + [value for _, value, _ in report_rows])
+
+# Add the main numeric PacBio QC metrics to MultiQC's General Statistics table,
+# where MultiQC renders the values with color-scaled bars.
+def number_or_none(value):
+    try:
+        return float(value)
+    except (TypeError, ValueError):
+        return None
+
+
+general_stats = {
+    "pacbio_hifi_reads": all_metrics["reads"],
+    "pacbio_hifi_yield_bp": all_metrics["yield"],
+    "pacbio_hifi_mean_length_bp": number_or_none(all_metrics["mean_length"]),
+    "pacbio_hifi_median_length_bp": number_or_none(all_metrics["median_length"]),
+    "pacbio_hifi_n50_bp": number_or_none(all_metrics["n50"]),
+    "pacbio_hifi_median_qv": number_or_none(all_metrics["median_qv"]),
+    "pacbio_hifi_mean_qv": number_or_none(all_metrics["mean_qv"]),
+    "pacbio_hifi_mean_passes": number_or_none(fmt(mean(passes))),
+    "pacbio_zmws_pass": passing_zmws,
+    "pacbio_lt_q20_reads": len(lt_q20),
+    "pacbio_gte_q30_reads": len(ge_q30),
+    "pacbio_gte_q30_bases_bp": q30_bases,
+}
+
+general_stats_headers = []
+for key, title, description, scale, maximum in [
+    ("pacbio_hifi_reads", "PacBio HiFi reads", "Number of HiFi BAM records", "YlGn", None),
+    ("pacbio_hifi_yield_bp", "PacBio HiFi yield", "HiFi yield in bases", "YlGn", None),
+    ("pacbio_hifi_mean_length_bp", "PacBio mean read length", "Mean HiFi read length (bp)", "YlGn", None),
+    ("pacbio_hifi_median_length_bp", "PacBio median read length", "Median HiFi read length (bp)", "YlGn", None),
+    ("pacbio_hifi_n50_bp", "PacBio read N50", "HiFi read N50 (bp)", "YlGn", None),
+    ("pacbio_hifi_median_qv", "PacBio median read QV", "Median read quality value", "YlGn", 60),
+    ("pacbio_hifi_mean_qv", "PacBio mean read QV", "Mean read quality value", "YlGn", 60),
+    ("pacbio_hifi_mean_passes", "PacBio mean passes", "Mean number of passes from the np tag", "YlGn", None),
+    ("pacbio_zmws_pass", "PacBio passing ZMWs", "Unique ZMWs represented in the HiFi BAM", "YlGn", None),
+    ("pacbio_lt_q20_reads", "PacBio reads <Q20", "HiFi records with read QV below 20", "RdYlGn_r", None),
+    ("pacbio_gte_q30_reads", "PacBio reads ≥Q30", "HiFi records with read QV at least 30", "YlGn", None),
+    ("pacbio_gte_q30_bases_bp", "PacBio bases ≥Q30", "Bases with base quality at least Q30", "YlGn", None),
+]:
+    config = {"title": title, "description": description, "min": 0, "scale": scale}
+    if maximum is not None:
+        config["max"] = maximum
+    general_stats_headers.append({key: config})
+
+general_stats_path = mqc_path.replace("_mqc.tsv", "_generalstats_mqc.json")
+with open(general_stats_path, "w") as handle:
+    json.dump(
+        {
+            "id": "pacbio_bam_generalstats",
+            "plot_type": "generalstats",
+            "headers": general_stats_headers,
+            "data": {sample: general_stats},
+        },
+        handle,
+    )
