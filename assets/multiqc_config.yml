@@ -4,20 +4,20 @@ report_comment: >
   <a href="https://github.com/UKWgenommedizin/FA-NIVA" target="_blank">documentation</a>.
 
 report_section_order:
-  pacbio_bam_summary:
-    after: Samtools
-  samtools_flagstat_color_table:
-    after: pacbio_bam_summary
   "pycoqc":
-    after: samtools_flagstat_color_table
+    order: 10000
+  pacbio_bam_summary:
+    order: 9999
+  samtools_flagstat_color_table:
+    order: 9998
   "mosdepth":
-    after: pycoqc
+    order: 9997
   "UKWgenommedizin-FA-NIVA-summary":
-    after: mosdepth
+    order: 3
   "FA-NIVA-methods-description":
-    after: UKWgenommedizin-FA-NIVA-summary
+    order: 2
   software_versions:
-    after: FA-NIVA-methods-description
+    order: 1
 
 export_plots: true
 
@@ -30,3 +30,171 @@ table_columns_visible:
   Samtools:
     flagstat_total: false
     mapped_passed: false
+
+# Preserve PacBio table and General Statistics styling from the working rebuild config.
+custom_table_header_config:
+  pacbio_bam_summary_table:
+    "HiFi Reads":
+      min: 0
+      scale: "YlGn"
+      format: "{:,.0f}"
+    "HiFi Yield (bp)":
+      min: 0
+      scale: "GnBu"
+      format: "{:,.0f}"
+    "HiFi Read Length (mean, bp)":
+      min: 0
+      scale: "YlGn"
+      format: "{:,.0f}"
+    "HiFi Read Length (median, bp)":
+      min: 0
+      scale: "YlGn"
+      format: "{:,.0f}"
+    "HiFi Read Length N50 (bp)":
+      min: 0
+      scale: "Greens"
+      format: "{:,.0f}"
+    "HiFi Read Quality (median)":
+      min: 0
+      max: 60
+      scale: "YlGn"
+      format: "{:,.1f}"
+    "HiFi Read Quality (mean)":
+      min: 0
+      max: 60
+      scale: "YlGn"
+      format: "{:,.1f}"
+    "HiFi Number of Passes (mean)":
+      min: 0
+      max: 20
+      scale: "PuBu"
+      format: "{:,.1f}"
+    "ZMWs pass filters":
+      min: 0
+      scale: "GnBu"
+      format: "{:,.0f}"
+    "<Q20 Reads":
+      min: 0
+      scale: "RdYlGn-rev"
+      format: "{:,.0f}"
+    "<Q20 Yield (bp)":
+      min: 0
+      scale: "RdYlGn-rev"
+      format: "{:,.0f}"
+    "<Q20 Read Length (mean, bp)":
+      min: 0
+      scale: "RdYlGn-rev"
+      format: "{:,.0f}"
+    "<Q20 Read Length (median, bp)":
+      min: 0
+      scale: "RdYlGn-rev"
+      format: "{:,.0f}"
+    "<Q20 Read Quality (median)":
+      min: 0
+      max: 20
+      scale: "RdYlGn-rev"
+      format: "{:,.1f}"
+    "<Q20 Read Quality (mean)":
+      min: 0
+      max: 20
+      scale: "RdYlGn-rev"
+      format: "{:,.1f}"
+    ">=Q30 Reads":
+      min: 0
+      scale: "YlGn"
+      format: "{:,.0f}"
+    ">=Q30 Yield (bp)":
+      min: 0
+      scale: "GnBu"
+      format: "{:,.0f}"
+    ">=Q30 Read Length (mean, bp)":
+      min: 0
+      scale: "YlGn"
+      format: "{:,.0f}"
+    ">=Q30 Read Length (median, bp)":
+      min: 0
+      scale: "YlGn"
+      format: "{:,.0f}"
+    ">=Q30 Read Quality (median)":
+      min: 0
+      max: 60
+      scale: "YlGn"
+      format: "{:,.1f}"
+    ">=Q30 Read Quality (mean)":
+      min: 0
+      max: 60
+      scale: "YlGn"
+      format: "{:,.1f}"
+    "Base quality >=Q30 (bp)":
+      min: 0
+      scale: "Greens"
+      format: "{:,.0f}"
+    "ZMWs represented in BAM":
+      min: 0
+      scale: "GnBu"
+      format: "{:,.0f}"
+  general_stats_table:
+    pacbio_hifi_reads:
+      title: "HiFi reads"
+      description: "Number of HiFi BAM records"
+      min: 0
+      scale: "YlGn"
+      format: "{:,.0f}"
+    pacbio_hifi_yield_bp:
+      title: "HiFi yield (bp)"
+      description: "Total HiFi yield in bases"
+      min: 0
+      scale: "YlGn"
+      format: "{:,.0f}"
+    pacbio_hifi_mean_length_bp:
+      title: "Mean HiFi length (bp)"
+      min: 0
+      scale: "YlGn"
+      format: "{:,.0f}"
+    pacbio_hifi_median_length_bp:
+      title: "Median HiFi length (bp)"
+      min: 0
+      scale: "YlGn"
+      format: "{:,.0f}"
+    pacbio_hifi_n50_bp:
+      title: "HiFi N50 (bp)"
+      min: 0
+      scale: "YlGn"
+      format: "{:,.0f}"
+    pacbio_hifi_median_qv:
+      title: "Median HiFi QV"
+      min: 0
+      max: 60
+      scale: "YlGn"
+      format: "{:,.1f}"
+    pacbio_hifi_mean_qv:
+      title: "Mean HiFi QV"
+      min: 0
+      max: 60
+      scale: "YlGn"
+      format: "{:,.1f}"
+    pacbio_hifi_mean_passes:
+      title: "Mean passes"
+      min: 0
+      scale: "YlGn"
+      format: "{:,.1f}"
+    pacbio_zmws_pass:
+      title: "Passing ZMWs"
+      min: 0
+      scale: "YlGn"
+      format: "{:,.0f}"
+    pacbio_lt_q20_reads:
+      title: "Reads <Q20"
+      min: 0
+      scale: "RdYlGn-rev"
+      format: "{:,.0f}"
+    pacbio_gte_q30_reads:
+      title: "Reads ≥Q30"
+      min: 0
+      scale: "YlGn"
+      format: "{:,.0f}"
+    pacbio_gte_q30_bases_bp:
+      title: "Bases ≥Q30 (bp)"
+      min: 0
+      scale: "YlGn"
+      format: "{:,.0f}"
