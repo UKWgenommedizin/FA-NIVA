@@ -23,6 +23,8 @@ Example on the server:
   ./rebuild_multiqc.sh /path/to/work/ab/cdef0123456789 /path/to/results/multiqc-adjusted
 
 Settings can be changed in rebuild_config.yml or by setting MULTIQC_CONFIG.
+The script copies recognized staged QC inputs with symlinks resolved before
+running MultiQC, so container runtimes can read the files.
 USAGE
 }
 
@@ -81,7 +83,7 @@ if [[ -n "$BROKEN_RAW_LINK" ]]; then
     exit 2
 fi
 
-RAW_INPUT_FILE="$(find -L "$INPUT_DIR" -type f \
+RAW_INPUT_FILE="$(find -L "$INPUT_DIR" -mindepth 2 -maxdepth 2 -type f \
     \( -name '*_mqc.tsv' -o -name '*_mqc.json' -o -name '*.flagstat' -o \
        -name '*.stats' -o -name '*.global.dist.txt' -o -name '*.summary.txt' -o \
        -name '*.region.dist.txt' -o \( -name '*.json' ! -name 'multiqc_data.json' \) \) \
@@ -109,6 +111,26 @@ if [[ ! -f "$CONFIG_FILE" ]]; then
 fi
 CONFIG_FILE="$(cd -- "$(dirname -- "$CONFIG_FILE")" && pwd)/$(basename -- "$CONFIG_FILE")"
 
+# Copy staged inputs while resolving Nextflow symlinks. Containers only mount
+# the task directory, so the original symlink targets may otherwise be hidden.
+STAGED_INPUT_DIR="$(mktemp -d "${TMPDIR:-/tmp}/faniva-multiqc-input.XXXXXX")"
+trap 'rm -rf "$STAGED_INPUT_DIR"' EXIT
+while IFS= read -r -d '' source_file; do
+    relative_path="${source_file#"${INPUT_DIR}/"}"
+    destination_dir="${STAGED_INPUT_DIR}/$(dirname -- "$relative_path")"
+    mkdir -p -- "$destination_dir"
+    cp -L "$source_file" "${STAGED_INPUT_DIR}/${relative_path}"
+done < <(find -L "$INPUT_DIR" -mindepth 2 -maxdepth 2 -type f \
+    \( -name '*_mqc.tsv' -o -name '*_mqc.json' -o -name '*.flagstat' -o \
+       -name '*.stats' -o -name '*.global.dist.txt' -o -name '*.summary.txt' -o \
+       -name '*.region.dist.txt' -o \( -name '*.json' ! -name 'multiqc_data.json' \) \) \
+    -print0)
+
+if [[ -z "$(find "$STAGED_INPUT_DIR" -type f -print -quit)" ]]; then
+    echo "ERROR: No readable QC inputs could be staged from: $INPUT_DIR" >&2
+    exit 2
+fi
+
 if command -v multiqc >/dev/null 2>&1; then
     echo "Using local $(multiqc --version 2>&1 | tail -n 1)"
     multiqc \
@@ -116,11 +138,11 @@ if command -v multiqc >/dev/null 2>&1; then
         --config "$CONFIG_FILE" \
         --outdir "$OUTPUT_DIR" \
         --filename multiqc_report.html \
-        "$INPUT_DIR"
+        "$STAGED_INPUT_DIR"
 elif command -v apptainer >/dev/null 2>&1; then
     echo "Using Apptainer image $MULTIQC_IMAGE"
     apptainer exec \
-        --bind "$INPUT_DIR:/input:ro" \
+        --bind "$STAGED_INPUT_DIR:/input:ro" \
         --bind "$OUTPUT_DIR:/output" \
         --bind "$CONFIG_FILE:/rebuild_config.yml:ro" \
         "docker://${MULTIQC_IMAGE}" \
@@ -133,7 +155,7 @@ elif command -v apptainer >/dev/null 2>&1; then
 elif command -v singularity >/dev/null 2>&1; then
     echo "Using Singularity image $MULTIQC_IMAGE"
     singularity exec \
-        --bind "$INPUT_DIR:/input:ro" \
+        --bind "$STAGED_INPUT_DIR:/input:ro" \
         --bind "$OUTPUT_DIR:/output" \
         --bind "$CONFIG_FILE:/rebuild_config.yml:ro" \
         "docker://${MULTIQC_IMAGE}" \
@@ -147,7 +169,7 @@ elif command -v docker >/dev/null 2>&1; then
     echo "Using container $MULTIQC_IMAGE"
     docker run --rm \
         --entrypoint multiqc \
-        --volume "$INPUT_DIR:/input:ro" \
+        --volume "$STAGED_INPUT_DIR:/input:ro" \
         --volume "$OUTPUT_DIR:/output" \
         --volume "$CONFIG_FILE:/rebuild_config.yml:ro" \
         "$MULTIQC_IMAGE" \
