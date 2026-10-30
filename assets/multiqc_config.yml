@@ -16,3 +16,13 @@ report_section_order:
     order: 90
 
 export_plots: true
+
+# Replace the native Samtools Flagstat beeswarm with the color-scaled table.
+remove_sections:
+  - samtools-flagstat
+
+# Use the styled custom columns instead of the native unstyled counts.
+table_columns_visible:
+  Samtools:
+    flagstat_total: false
+    mapped_passed: false

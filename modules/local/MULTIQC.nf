@@ -11,6 +11,7 @@ process MULTIQC {
     path(multiqc_config)
     path(extra_multiqc_config)
     path(multiqc_logo)
+    path(flagstat_mqc_script)
 
     output:
     path "*multiqc_report.html", emit: report
@@ -26,6 +27,8 @@ process MULTIQC {
     def config = multiqc_config ? "--config $multiqc_config" : ''
     def extra_config = extra_multiqc_config ? "--config $extra_multiqc_config" : ''
     """
+    python3 "${flagstat_mqc_script}" .
+
     multiqc \\
         --force \\
         $args \\
