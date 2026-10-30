@@ -22,7 +22,7 @@ process DORADO_BASECALLER {
 
     script:
         def args = task.ext.args ?: ''
-        def device = params.use_gpu ? "cuda:all": "cpu"
+        def device = params.use_gpu ? "cuda:0": "cpu"
         def mod_model = params.dorado_modifications_model ? "--modified-bases ${params.dorado_modifications_model}" : ''
 
         """
@@ -32,6 +32,7 @@ process DORADO_BASECALLER {
         mkdir -p pod5
         mv *.pod5 pod5
         
+        echo "Using CUDA_VISIBLE_DEVICES=\${CUDA_VISIBLE_DEVICES:-unset}"
         dorado basecaller ${args} /opt/dorado/models/${params.dorado_model} \\
                 pod5/ \\
                 --device ${device} \\

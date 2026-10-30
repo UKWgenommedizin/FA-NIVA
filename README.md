@@ -158,10 +158,20 @@ Create a CSV file (`samplesheet.csv`) with the following columns. The input_path
 
 To ensure compatibility across operating systems, we recommend copying and modifying the template file located at [`assets/samplesheet.csv`](assets/samplesheet.csv). When preparing the sample sheet on Linux-based HPC systems, editing the file with vim or another Unix-compatible text editor can help avoid issues related to Windows line endings and file formatting.
 
+For independent samples, add one row per sample and give each sample a unique `id`. When using the LSF GPU profile, GPU-enabled tasks for these samples are submitted independently and can run on separate GPUs as the scheduler makes them available.
+
 ```csv
 id,sample,flowcell,input_path,batch,kit
 test,chr21,flowcell1,/home/yu_j/smbshare/test_faniva/chr21,20251127,LSK114
 test,chr22,flowcell1,/home/yu_j/smbshare/test_faniva/chr22,20251127,LSK114
+```
+
+Example with two independent samples:
+
+```csv
+id,sample,flowcell,input_path,batch,kit
+sample1,sample1,flowcell1,/data/sample1,20251127,LSK114
+sample2,sample2,flowcell1,/data/sample2,20251127,LSK114
 ```
 ---
 
@@ -253,7 +263,7 @@ nextflow run ./FA-NIVA \
 > **Note:** when the input is BAM, the dorado basecalling step is skipped.
 
 #### Barcoded Datasets 
-The default FA-NIVA workflow is configured for single-sample analysis and does not perform barcode demultiplexing. For datasets containing multiple barcoded samples, users should perform barcode demultiplexing during the basecalling step using Dorado's native barcode support. Barcode demultiplexing can be enabled by modifying the Dorado command in: `modules/local/DORADO_BASECALLER.nf` and adding the appropriate Dorado barcode-related parameters (e.g., barcode kit specification and demultiplexing options) according to the Dorado documentation. 
+FA-NIVA supports independent samples listed separately in the samplesheet, but does not automatically demultiplex barcoded datasets. For datasets containing multiple barcoded samples, users should perform barcode demultiplexing during the basecalling step using Dorado's native barcode support. Barcode demultiplexing can be enabled by modifying the Dorado command in: `modules/local/DORADO_BASECALLER.nf` and adding the appropriate Dorado barcode-related parameters (e.g., barcode kit specification and demultiplexing options) according to the Dorado documentation.
 
 FA-NIVA does not automatically detect or process multiplexed datasets. If barcode demultiplexing is required, users must customize the Dorado basecalling module before running the workflow. Because Dorado provides built-in support for barcode demultiplexing, users can adapt the workflow to their experimental design by editing the basecalling command and supplying the barcode configuration appropriate for their sequencing run.
 
@@ -303,13 +313,13 @@ Resource limits can be adjusted in `conf/base.config`.
 >
 > GPU resources are required for Dorado basecalling and recommended for DeepVariant variant calling.
 >
-> To maximize stability on shared HPC systems, we recommend processing one sample at a time and allocating a single GPU per analysis:
+> On LSF, each GPU-enabled task requests the GPU resources configured by `gpu_resources`. Configure this request for one GPU per task. Multiple samples in the input sheet can then run concurrently when GPUs are available; tasks wait in the scheduler queue when they are not.
 >
 > ```bash
 > --use_gpu 1
 > ```
 >
-> Using a dedicated GPU minimizes resource contention and can improve overall workflow performance and scheduling efficiency.
+> Use a distinct `id` for each sample in a multi-sample input sheet. Dorado and DeepVariant use the GPU made visible to their task by the scheduler rather than selecting a device independently.
 
 For a complete list of available parameters and advanced options, see [`nextflow_schema.json`](nextflow_schema.json).
 

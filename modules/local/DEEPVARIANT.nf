@@ -7,7 +7,6 @@ def deepvariantModel = params.reads_format == 'bam' && params.bam_platform == 'p
 
 process DEEPVARIANT {
     tag "$meta.id"
-    maxForks 4  // Limits the number of concurrent executions of this process to the maximum GPUs available
     label processLabel
 
     container "google/deepvariant:1.9.0-gpu"
@@ -29,26 +28,10 @@ process DEEPVARIANT {
     when:
         task.ext.when == null || task.ext.when
 
-    beforeScript """
-        WORK_DIR=\$(mktemp -d)
-        # or find the actual task workdir
-        sleep \$((RANDOM % 15))
-        GPU_ID=\$(nvidia-smi --query-gpu=index,memory.free \\
-                    --format=csv,noheader,nounits \\
-                | sort -t',' -k2 -rn \\
-                | head -1 \\
-                | cut -d',' -f1 \\
-                | tr -d ' ')
-        echo \$GPU_ID > /tmp/.gpu_env_${meta.id}
-        """
-
-
-
     script:
         
         """
-        export CUDA_VISIBLE_DEVICES=\$(cat /tmp/.gpu_env_${meta.id})
-        echo "Using GPU: \$CUDA_VISIBLE_DEVICES"
+        echo "Using CUDA_VISIBLE_DEVICES=\${CUDA_VISIBLE_DEVICES:-unset}"
 
         /opt/deepvariant/bin/run_deepvariant \\
             --num_shards=${task.cpus} \\
@@ -58,9 +41,6 @@ process DEEPVARIANT {
             --ref=${fasta} \\
             --reads=${cram} \\
             --output_vcf=${meta.id}.deepvariant.vcf.gz
-
-        # cleanup
-        rm -f /tmp/.gpu_env_${meta.id}
 
         cat <<-END_VERSIONS > versions.yml
         "${task.process}":
