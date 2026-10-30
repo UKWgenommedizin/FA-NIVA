@@ -24,7 +24,8 @@ Example on the server:
 
 Settings can be changed in rebuild_config.yml or by setting MULTIQC_CONFIG.
 The script copies recognized staged QC inputs with symlinks resolved before
-running MultiQC, so container runtimes can read the files.
+running MultiQC, so container runtimes can read the files. Python 3 is required
+to prepare the styled Samtools flagstat columns.
 USAGE
 }
 
@@ -130,6 +131,12 @@ if [[ -z "$(find "$STAGED_INPUT_DIR" -type f -print -quit)" ]]; then
     echo "ERROR: No readable QC inputs could be staged from: $INPUT_DIR" >&2
     exit 2
 fi
+
+if ! command -v python3 >/dev/null 2>&1; then
+    echo "ERROR: Python 3 is required to prepare styled Samtools flagstat columns." >&2
+    exit 127
+fi
+python3 "${SCRIPT_DIR}/rebuild_samtools_generalstats.py" "$STAGED_INPUT_DIR"
 
 if command -v multiqc >/dev/null 2>&1; then
     echo "Using local $(multiqc --version 2>&1 | tail -n 1)"
