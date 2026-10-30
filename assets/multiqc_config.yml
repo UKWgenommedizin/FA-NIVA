@@ -4,12 +4,12 @@ report_comment: >
   <a href="https://github.com/UKWgenommedizin/FA-NIVA" target="_blank">documentation</a>.
 
 report_section_order:
-  "FA-NIVA-summary":
-    order: 1000
+  "UKWgenommedizin-FA-NIVA-summary":
+    order: 3
   "FA-NIVA-methods-description":
-    order: 1001
+    order: 2
   software_versions:
-    order: 1002
+    order: 1
   "pycoqc":
     order: 100
   "mosdepth":
