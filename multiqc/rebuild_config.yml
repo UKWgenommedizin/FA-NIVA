@@ -2,6 +2,31 @@
 # Edit this file, then rerun rebuild_multiqc.sh.
 no_version_check: true
 
+# Style and expose the core samtools flagstat metrics in General Statistics.
+general_stats_columns:
+  samtools:
+    columns:
+      flagstat_total:
+        title: "M Reads"
+        description: "Total reads in the BAM"
+        hidden: false
+        min: 0
+        scale: "GnBu"
+      mapped_passed:
+        title: "M Reads Mapped"
+        description: "QC-passed reads mapped by samtools flagstat"
+        hidden: false
+        min: 0
+        scale: "YlGn"
+      mapped_passed_pct:
+        title: "% Reads Mapped"
+        description: "Percentage of QC-passed reads mapped by samtools flagstat"
+        hidden: false
+        min: 0
+        max: 100
+        scale: "RdYlGn"
+        format: "{:,.1f}%"
+
 report_section_order:
   # QC sections first, then the pipeline context sections at the end.
   UKWgenommedizin-FA-NIVA-summary:
