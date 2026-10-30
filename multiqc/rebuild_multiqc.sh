@@ -25,8 +25,8 @@ Example on the server:
 Settings can be changed in rebuild_config.yml or by setting MULTIQC_CONFIG.
 The script copies recognized staged QC inputs with symlinks resolved before
 running MultiQC, so container runtimes can read the files. Python 3 is required
-to prepare the styled Samtools flagstat columns. Generated Samtools
-General Statistics JSON files are kept in OUTPUT_DIR/samtools_generalstats/.
+to prepare the styled Samtools flagstat table. Generated General Statistics
+JSON and the color-scaled flagstat table are kept under OUTPUT_DIR.
 USAGE
 }
 
@@ -148,6 +148,15 @@ while IFS= read -r -d '' json_file; do
 done < <(find "$STAGED_INPUT_DIR" -type f \
     -name '*_samtools_generalstats_mqc.json' -print0)
 
+SAMTOOLS_FLAGSTAT_TABLES_DIR="${OUTPUT_DIR}/samtools_flagstat_tables"
+while IFS= read -r -d '' table_file; do
+    relative_path="${table_file#"${STAGED_INPUT_DIR}/"}"
+    destination_dir="${SAMTOOLS_FLAGSTAT_TABLES_DIR}/$(dirname -- "$relative_path")"
+    mkdir -p -- "$destination_dir"
+    cp -- "$table_file" "${destination_dir}/$(basename -- "$table_file")"
+done < <(find "$STAGED_INPUT_DIR" -type f \
+    -name '*_samtools_flagstat_mqc.tsv' -print0)
+
 if command -v multiqc >/dev/null 2>&1; then
     echo "Using local $(multiqc --version 2>&1 | tail -n 1)"
     multiqc \
@@ -203,4 +212,7 @@ fi
 echo "Report written to: ${OUTPUT_DIR}/multiqc_report.html"
 if [[ -d "$SAMTOOLS_GENERALSTATS_DIR" ]]; then
     echo "Samtools General Statistics JSON files kept in: ${SAMTOOLS_GENERALSTATS_DIR}"
+fi
+if [[ -d "$SAMTOOLS_FLAGSTAT_TABLES_DIR" ]]; then
+    echo "Color-scaled Samtools flagstat tables kept in: ${SAMTOOLS_FLAGSTAT_TABLES_DIR}"
 fi
