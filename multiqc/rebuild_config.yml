@@ -14,6 +14,106 @@ report_section_order:
 # The generated PacBio metrics currently use these internal names as labels.
 # This renames the General Statistics columns and sets their colour scales.
 custom_table_header_config:
+  pacbio_bam_summary_table:
+    "HiFi Reads":
+      min: 0
+      scale: "YlGn"
+      format: "{:,.0f}"
+    "HiFi Yield (bp)":
+      min: 0
+      scale: "GnBu"
+      format: "{:,.0f}"
+    "HiFi Read Length (mean, bp)":
+      min: 0
+      scale: "YlGn"
+      format: "{:,.0f}"
+    "HiFi Read Length (median, bp)":
+      min: 0
+      scale: "YlGn"
+      format: "{:,.0f}"
+    "HiFi Read Length N50 (bp)":
+      min: 0
+      scale: "Greens"
+      format: "{:,.0f}"
+    "HiFi Read Quality (median)":
+      min: 0
+      max: 60
+      scale: "YlGn"
+      format: "{:,.1f}"
+    "HiFi Read Quality (mean)":
+      min: 0
+      max: 60
+      scale: "YlGn"
+      format: "{:,.1f}"
+    "HiFi Number of Passes (mean)":
+      min: 0
+      max: 20
+      scale: "PuBu"
+      format: "{:,.1f}"
+    "ZMWs pass filters":
+      min: 0
+      scale: "GnBu"
+      format: "{:,.0f}"
+    "<Q20 Reads":
+      min: 0
+      scale: "RdYlGn-rev"
+      format: "{:,.0f}"
+    "<Q20 Yield (bp)":
+      min: 0
+      scale: "RdYlGn-rev"
+      format: "{:,.0f}"
+    "<Q20 Read Length (mean, bp)":
+      min: 0
+      scale: "RdYlGn-rev"
+      format: "{:,.0f}"
+    "<Q20 Read Length (median, bp)":
+      min: 0
+      scale: "RdYlGn-rev"
+      format: "{:,.0f}"
+    "<Q20 Read Quality (median)":
+      min: 0
+      max: 20
+      scale: "RdYlGn-rev"
+      format: "{:,.1f}"
+    "<Q20 Read Quality (mean)":
+      min: 0
+      max: 20
+      scale: "RdYlGn-rev"
+      format: "{:,.1f}"
+    ">=Q30 Reads":
+      min: 0
+      scale: "YlGn"
+      format: "{:,.0f}"
+    ">=Q30 Yield (bp)":
+      min: 0
+      scale: "GnBu"
+      format: "{:,.0f}"
+    ">=Q30 Read Length (mean, bp)":
+      min: 0
+      scale: "YlGn"
+      format: "{:,.0f}"
+    ">=Q30 Read Length (median, bp)":
+      min: 0
+      scale: "YlGn"
+      format: "{:,.0f}"
+    ">=Q30 Read Quality (median)":
+      min: 0
+      max: 60
+      scale: "YlGn"
+      format: "{:,.1f}"
+    ">=Q30 Read Quality (mean)":
+      min: 0
+      max: 60
+      scale: "YlGn"
+      format: "{:,.1f}"
+    "Base quality >=Q30 (bp)":
+      min: 0
+      scale: "Greens"
+      format: "{:,.0f}"
+    "ZMWs represented in BAM":
+      min: 0
+      scale: "GnBu"
+      format: "{:,.0f}"
   general_stats_table:
     pacbio_hifi_reads:
       title: "HiFi reads"

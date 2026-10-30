@@ -134,6 +134,32 @@ writer.writerows(report_rows)
 # MultiQC's custom-content parser accepts a self-describing TSV table. Files
 # sharing the section id are combined into one table, one row per sample.
 mqc_path, sample = sys.argv[1:3]
+table_header_styles = {
+    "HiFi Reads": ("YlGn", "{:,.0f}", None),
+    "HiFi Yield (bp)": ("GnBu", "{:,.0f}", None),
+    "HiFi Read Length (mean, bp)": ("YlGn", "{:,.0f}", None),
+    "HiFi Read Length (median, bp)": ("YlGn", "{:,.0f}", None),
+    "HiFi Read Length N50 (bp)": ("Greens", "{:,.0f}", None),
+    "HiFi Read Quality (median)": ("YlGn", "{:,.1f}", 60),
+    "HiFi Read Quality (mean)": ("YlGn", "{:,.1f}", 60),
+    "HiFi Number of Passes (mean)": ("PuBu", "{:,.1f}", 20),
+    "ZMWs pass filters": ("GnBu", "{:,.0f}", None),
+    "<Q20 Reads": ("RdYlGn-rev", "{:,.0f}", None),
+    "<Q20 Yield (bp)": ("RdYlGn-rev", "{:,.0f}", None),
+    "<Q20 Read Length (mean, bp)": ("RdYlGn-rev", "{:,.0f}", None),
+    "<Q20 Read Length (median, bp)": ("RdYlGn-rev", "{:,.0f}", None),
+    "<Q20 Read Quality (median)": ("RdYlGn-rev", "{:,.1f}", 20),
+    "<Q20 Read Quality (mean)": ("RdYlGn-rev", "{:,.1f}", 20),
+    ">=Q30 Reads": ("YlGn", "{:,.0f}", None),
+    ">=Q30 Yield (bp)": ("GnBu", "{:,.0f}", None),
+    ">=Q30 Read Length (mean, bp)": ("YlGn", "{:,.0f}", None),
+    ">=Q30 Read Length (median, bp)": ("YlGn", "{:,.0f}", None),
+    ">=Q30 Read Quality (median)": ("YlGn", "{:,.1f}", 60),
+    ">=Q30 Read Quality (mean)": ("YlGn", "{:,.1f}", 60),
+    "Base quality >=Q30 (bp)": ("Greens", "{:,.0f}", None),
+    "ZMWs represented in BAM": ("GnBu", "{:,.0f}", None),
+}
+
 with open(mqc_path, "w", newline="") as handle:
     handle.write('# id: "pacbio_bam_summary"\n')
     handle.write('# section_name: "PacBio BAM summary"\n')
@@ -141,6 +167,15 @@ with open(mqc_path, "w", newline="") as handle:
     handle.write('# format: "tsv"\n')
     handle.write('# plot_type: "table"\n')
     handle.write('# pconfig:\n#   id: "pacbio_bam_summary_table"\n')
+    handle.write('# headers:\n')
+    for metric, (scale, number_format, maximum) in table_header_styles.items():
+        handle.write(f'#   "{metric}":\n')
+        handle.write(f'#     title: "{metric}"\n')
+        handle.write('#     min: 0\n')
+        handle.write(f'#     scale: "{scale}"\n')
+        handle.write(f'#     format: "{number_format}"\n')
+        if maximum is not None:
+            handle.write(f'#     max: {maximum}\n')
     table_writer = csv.writer(handle, delimiter="\t", lineterminator="\n")
     table_writer.writerow(["Sample"] + [name for name, _, _ in report_rows])
     table_writer.writerow([sample] + [value for _, value, _ in report_rows])
