@@ -230,7 +230,7 @@ with open(general_stats_path, "w") as handle:
         {
             "id": "pacbio_bam_generalstats",
             "plot_type": "generalstats",
-            "headers": general_stats_headers,
+            "pconfig": general_stats_headers,
             "data": {sample: general_stats},
         },
         handle,

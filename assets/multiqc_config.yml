@@ -4,16 +4,20 @@ report_comment: >
   <a href="https://github.com/UKWgenommedizin/FA-NIVA" target="_blank">documentation</a>.
 
 report_section_order:
-  "UKWgenommedizin-FA-NIVA-summary":
-    order: 3
-  "FA-NIVA-methods-description":
-    order: 2
-  software_versions:
-    order: 1
+  pacbio_bam_summary:
+    after: Samtools
+  samtools_flagstat_color_table:
+    after: pacbio_bam_summary
   "pycoqc":
-    order: 100
+    after: samtools_flagstat_color_table
   "mosdepth":
-    order: 90
+    after: pycoqc
+  "UKWgenommedizin-FA-NIVA-summary":
+    after: mosdepth
+  "FA-NIVA-methods-description":
+    after: UKWgenommedizin-FA-NIVA-summary
+  software_versions:
+    after: FA-NIVA-methods-description
 
 export_plots: true
 
