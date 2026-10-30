@@ -1,0 +1,6 @@
+# Local reports, plots, and copied Nextflow task work directories.
+/*/
+/*.html
+/versions.yml
+/multiqc_data/
+/multiqc_plots/

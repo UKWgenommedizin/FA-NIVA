@@ -1,0 +1,81 @@
+# Standalone settings for rebuilding the copied MultiQC report.
+# Edit this file, then rerun rebuild_multiqc.sh.
+no_version_check: true
+
+report_section_order:
+  # QC sections first, then the pipeline context sections at the end.
+  UKWgenommedizin-FA-NIVA-summary:
+    after: Samtools
+  FA-NIVA-methods-description:
+    after: UKWgenommedizin-FA-NIVA-summary
+  software_versions:
+    after: FA-NIVA-methods-description
+
+# The generated PacBio metrics currently use these internal names as labels.
+# This renames the General Statistics columns and sets their colour scales.
+custom_table_header_config:
+  general_stats_table:
+    pacbio_hifi_reads:
+      title: "HiFi reads"
+      description: "Number of HiFi BAM records"
+      min: 0
+      scale: "YlGn"
+      format: "{:,.0f}"
+    pacbio_hifi_yield_bp:
+      title: "HiFi yield (bp)"
+      description: "Total HiFi yield in bases"
+      min: 0
+      scale: "YlGn"
+      format: "{:,.0f}"
+    pacbio_hifi_mean_length_bp:
+      title: "Mean HiFi length (bp)"
+      min: 0
+      scale: "YlGn"
+      format: "{:,.0f}"
+    pacbio_hifi_median_length_bp:
+      title: "Median HiFi length (bp)"
+      min: 0
+      scale: "YlGn"
+      format: "{:,.0f}"
+    pacbio_hifi_n50_bp:
+      title: "HiFi N50 (bp)"
+      min: 0
+      scale: "YlGn"
+      format: "{:,.0f}"
+    pacbio_hifi_median_qv:
+      title: "Median HiFi QV"
+      min: 0
+      max: 60
+      scale: "YlGn"
+      format: "{:,.1f}"
+    pacbio_hifi_mean_qv:
+      title: "Mean HiFi QV"
+      min: 0
+      max: 60
+      scale: "YlGn"
+      format: "{:,.1f}"
+    pacbio_hifi_mean_passes:
+      title: "Mean passes"
+      min: 0
+      scale: "YlGn"
+      format: "{:,.1f}"
+    pacbio_zmws_pass:
+      title: "Passing ZMWs"
+      min: 0
+      scale: "YlGn"
+      format: "{:,.0f}"
+    pacbio_lt_q20_reads:
+      title: "Reads <Q20"
+      min: 0
+      scale: "RdYlGn-rev"
+      format: "{:,.0f}"
+    pacbio_gte_q30_reads:
+      title: "Reads ≥Q30"
+      min: 0
+      scale: "YlGn"
+      format: "{:,.0f}"
+    pacbio_gte_q30_bases_bp:
+      title: "Bases ≥Q30 (bp)"
+      min: 0
+      scale: "YlGn"
+      format: "{:,.0f}"
