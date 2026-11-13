@@ -223,10 +223,11 @@ nextflow run ./FA-NIVA \
   --outdir results \
   --dorado_model dna_r10.4.1_e8.2_400bps_fast@v5.0.0 \
   --reads_format fast5 \
+  --bam_platform ont \
   --use_gpu true
 ```
 
-> **Note:** `--dorado_model` must match the model used for basecalling.
+> **Note:** `--dorado_model` must match the model used for basecalling. For FAST5 inputs, `--bam_platform` is still set to `ont` unless the workflow is running on PacBio BAM data, and this parameter is only relevant for BAM-based variant calling.
 
 #### 2.2.3 Using BAM files
 
@@ -247,10 +248,11 @@ nextflow run ./FA-NIVA \
   --fasta_index ./ref/GRCh38_GIABv3_no_alt_analysis_set_maskedGRC_decoys_MAP2K3_KMT2C_KCNJ18.fasta.fai \
   --outdir results \
   --reads_format bam \
+  --bam_platform ont \
   --use_gpu true
 ```
 
-> **Note:** when the input is BAM, the dorado basecalling step is skipped.
+> **Note:** when the input is BAM, the dorado basecalling step is skipped. For PacBio HiFi BAM input, set `--bam_platform pacbio` to enable the PacBio-specific BAM summary and DeepVariant PACBIO model selection.
 
 #### Barcoded Datasets 
 The default FA-NIVA workflow is configured for single-sample analysis and does not perform barcode demultiplexing. For datasets containing multiple barcoded samples, users should perform barcode demultiplexing during the basecalling step using Dorado's native barcode support. Barcode demultiplexing can be enabled by modifying the Dorado command in: `modules/local/DORADO_BASECALLER.nf` and adding the appropriate Dorado barcode-related parameters (e.g., barcode kit specification and demultiplexing options) according to the Dorado documentation. 
@@ -274,8 +276,8 @@ FA-NIVA can be configured through a combination of command-line parameters and c
 | `--fasta_index` | Path to the corresponding FASTA index (`.fai`) file. Optional if configured in `conf/profile.config`. |
 | `--use_gpu` | Enable GPU acceleration for Dorado basecalling and DeepVariant variant calling. Optional if configured in `conf/profile.config`. |
 | `--dorado_model` | Important to use the corresponding dorado_model for basecalling. Will be skipped if input is bam. Optional if configured in `conf/profile.config`. |
-| `--reads_format` | Optional if configured in `conf/profile.config`.  |
-| `--bam_platform` | Platform for BAM input: `ont` (default) or `pacbio`. PacBio enables the BAM summary and selects DeepVariant's `PACBIO` model. |
+| `--reads_format` | Input format for sequencing reads: `pod5`, `fast5`, or `bam`. Optional if configured in `conf/profile.config`; the default example profile sets this to `bam`. |
+| `--bam_platform` | Platform for BAM input: `ont` (default) or `pacbio`. PacBio enables the BAM summary and selects DeepVariant's `PACBIO` model. Optional if configured in `conf/profile.config`. |
 
 ### 3.2 Configuration Files
 
@@ -284,7 +286,7 @@ The following files may require modification depending on the computing environm
 | File | Description |
 |------|-------------|
 | `assets/samplesheet.csv` | Defines the input samples. The `input_path` field should contain the absolute path to the directory containing the input sequencing files (`*.pod5`, `*.fast5`, or `*.bam`). |
-| `conf/profile.config` | Defines reference genome resources, Dorado model settings, and AnnotSV database locations. Reference paths can also be supplied using `--fasta` and `--fasta_index`. |
+| `conf/profile.config` | Defines default reference genome resources, Dorado model settings, and input mode parameters such as `reads_format` and `bam_platform`. The default example profile sets `reads_format = 'bam'` and `bam_platform = 'ont'`, while `--fasta` and `--fasta_index` can still be supplied on the command line. |
 | `conf/base.config` | Specifies computational resources such as CPU, memory, and GPU allocation. |
 | `nextflow.config` | Controls workflow components and software modules. Structural variant annotation is disabled by default and must be enabled if AnnotSV analysis is required. |
 | `assets/SNV_modify_regions.csv` | Defines genomic regions used for SNV–SV joint phasing analysis. Modify this file to analyze additional genomic regions. |
@@ -395,11 +397,16 @@ pbmm2 does not support default bam file from dorado basecalling. To address this
 
 ### DeepVariant Configuration
 
-FA-NIVA uses the **ONT_R104** model for ONT data and the **PACBIO** model when PacBio BAM input is selected with `--bam_platform pacbio`:
+DeepVariant model selection is handled automatically by the pipeline from the configured input parameters. FA-NIVA selects the **ONT_R104** model for ONT data and the **PACBIO** model for PacBio BAM input when `--bam_platform pacbio` is set. Users do not need to manually change the DeepVariant model during a standard run.
 
 ```text
-model_type = ONT_R104 (ONT) or PACBIO (PacBio)
+reads_format = bam|pod5|fast5
+bam_platform = ont|pacbio
+
+model_type = ONT_R104 (ONT / nanopore input) or PACBIO (PacBio BAM input)
 ```
+
+This means that the correct DeepVariant model is chosen automatically based on the configured sequencing input and, for BAM files, the specified `--bam_platform` value.
 
 ### WhatsHap Configuration
 
