@@ -4,6 +4,7 @@
 | :--- | :--- |
 | Welcome to the official repository for **FA-NIVA**, a Nextflow framework for integrated variant analysis of Nanopore-based long-read sequencing data. This pipeline automates basecalling, alignment, variant calling, and structural variant annotation. | <a href="docs/FA-NIVA_Logo.pdf"><img src="docs/FA-NIVA_Logo.png" width="220" alt="FA-NIVA Logo"></a> |
 
+> **Branch notice:** The `main` branch uses Dorado v0.8.1. For the updated Dorado version and support for PacBio BAM input, see the [`doradov2.1.1`](https://github.com/UKWgenommedizin/FA-NIVA/tree/doradov2.1.1) branch.
 
 ![Description](https://github.com/UKWgenommedizin/FA-NIVA/blob/main/docs/fa-niva.png)
 
